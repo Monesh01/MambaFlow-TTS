@@ -139,7 +139,7 @@ $$
 Unlike standard causal SSMs designed for autoregressive language modeling, speech acoustic generation requires bidirectional context. We construct bidirectional Mamba-2 blocks that compute:
 
 $$
-h_{\mathrm{fwd}} = \operatorname{SSM}_{\mathrm{fwd}}(x, t), \quad h_{\mathrm{bwd}} = \operatorname{Reverse}\Bigl(\operatorname{SSM}_{\mathrm{bwd}}\bigl(\operatorname{Reverse}(x, \text{mask}), t\bigr), \text{mask}\Bigr)
+h_{\mathrm{fwd}} = \mathrm{SSM}_{\mathrm{fwd}}(x, t), \quad h_{\mathrm{bwd}} = \mathrm{Reverse}\Bigl(\mathrm{SSM}_{\mathrm{bwd}}\bigl(\mathrm{Reverse}(x, \mathrm{mask}), t\bigr), \mathrm{mask}\Bigr)
 $$
 
 where sequence reversal strictly respects padded boundary masks using tensor gather operations to ensure numerical stability during distributed gradient backpropagation.
