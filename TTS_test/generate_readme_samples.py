@@ -17,11 +17,31 @@ torch.load = patched_load
 
 from TTSDataModule import TTSMODEL
 from TTSDatasetModule import denormalize_mel
-from test_inference_bigvgan import get_latest_checkpoint
 import bigvgan
 from bigvgan import BigVGAN
 from bigvgan import AttrDict
 from preprocessing.text import text_to_sequence
+
+def get_best_checkpoint(ckpt_dir="/home/monesh/TTSModel/TTS_checkpoints/"):
+    if not os.path.exists(ckpt_dir):
+        return None
+    ckpts = [
+        os.path.join(ckpt_dir, f)
+        for f in os.listdir(ckpt_dir)
+        if f.endswith(".ckpt") and not f.endswith(".tmp") and not os.path.basename(f).startswith("last")
+    ]
+    if not ckpts:
+        last_ckpt = os.path.join(ckpt_dir, "last.ckpt")
+        return last_ckpt if os.path.exists(last_ckpt) else None
+    
+    def extract_val_loss(p):
+        import re
+        match = re.search(r"val_loss=([0-9]+\.[0-9]+)", os.path.basename(p))
+        if match:
+            return float(match.group(1))
+        return float("inf")
+    
+    return min(ckpts, key=extract_val_loss)
 
 @torch.no_grad()
 def generate_samples():
@@ -31,9 +51,9 @@ def generate_samples():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Generating README audio samples on: {device}", flush=True)
 
-    # 1. Load User TTS Model
-    ckpt_path = get_latest_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
-    print(f"Loading TTS checkpoint: {ckpt_path}", flush=True)
+    # 1. Load Best TTS Model Checkpoint
+    ckpt_path = get_best_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
+    print(f"Loading BEST TTS checkpoint: {ckpt_path}", flush=True)
     lightning_model = TTSMODEL.load_from_checkpoint(ckpt_path, map_location=device)
     lightning_model.eval()
     lightning_model.to(device)
@@ -59,29 +79,49 @@ def generate_samples():
 
     samples = [
         {
-            "category": "Medium Sentence",
-            "filename": "sample_medium.wav",
-            "text": "The quick brown fox jumps over the lazy dog, demonstrating clear prosody and natural flow."
-        },
-        {
-            "category": "Longest Sentence",
-            "filename": "sample_longest.wav",
-            "text": "Continuous flow matching combined with bidirectional state-space models provides a modern, mathematically rigorous foundation for high-fidelity speech synthesis, effortlessly maintaining acoustic consistency across extended paragraphs without quadratic attention bottlenecks."
-        },
-        {
-            "category": "Emotional Expression",
-            "filename": "sample_emotional.wav",
-            "text": "I simply cannot believe it! We finally made it through against all odds, and it feels absolutely incredible!"
+            "category": "1-Minute Continuous Speech",
+            "filename": "sample_1min_continuous.wav",
+            "text": "The rapid advancement of artificial intelligence and generative modeling has fundamentally transformed modern speech synthesis. Traditional text-to-speech pipelines often relied on multi-stage architectures with autoregressive decoders, which suffered from slow sequential generation and compounding error propagation. In recent years, continuous flow matching and state-space architectures have emerged as powerful alternatives. By modeling the velocity field of a probability path between simple prior distributions and complex acoustic targets, flow matching enables high-fidelity mel-spectrogram generation in just a handful of integration steps. Furthermore, replacing quadratic self-attention mechanisms with linear state-space models allows speech synthesis systems to scale effortlessly to long-form audio without running into memory bottlenecks or computational slowdowns. As these acoustic representations pass through high-capacity neural vocoders with anti-aliased periodic activations, the resulting synthesized speech exhibits exceptional naturalness, crystal-clear articulation, and smooth, human-like prosodic rhythm throughout the entire passage.",
+            "steps": 15,
+            "length_scale": 1.2,
+            "temperature": 0.667
         },
         {
             "category": "Conversational Daily",
             "filename": "sample_conversational.wav",
-            "text": "Good morning! How are you doing today? I hope you're ready for an exciting journey ahead."
+            "text": "Good morning! How are you doing today? I hope you're ready for an exciting journey ahead.",
+            "steps": 25,
+            "length_scale": 1.2,
+            "temperature": 0.667
+        },
+        {
+            "category": "Medium Sentence",
+            "filename": "sample_medium.wav",
+            "text": "The quick brown fox jumps over the lazy dog, demonstrating clear prosody and natural flow.",
+            "steps": 25,
+            "length_scale": 1.2,
+            "temperature": 0.667
+        },
+        {
+            "category": "Emotional Expression",
+            "filename": "sample_emotional.wav",
+            "text": "I simply cannot believe it! We finally made it through against all odds, and it feels absolutely incredible!",
+            "steps": 25,
+            "length_scale": 1.2,
+            "temperature": 0.667
+        },
+        {
+            "category": "Technical Definition",
+            "filename": "sample_longest.wav",
+            "text": "Continuous flow matching combined with bidirectional state-space models provides a modern, mathematically rigorous foundation for high-fidelity speech synthesis, effortlessly maintaining acoustic consistency across extended paragraphs without quadratic attention bottlenecks.",
+            "steps": 25,
+            "length_scale": 1.2,
+            "temperature": 0.667
         }
     ]
 
     for item in samples:
-        print(f"\nSynthesizing: {item['category']} (25 Euler steps)...")
+        print(f"\nSynthesizing: {item['category']} ({item['steps']} Euler steps, length_scale={item['length_scale']})...")
         print(f"Text: '{item['text']}'")
         
         seq = text_to_sequence(item["text"], ["english_cleaners2"])[0]
@@ -90,8 +130,9 @@ def generate_samples():
         user_mel_pred_norm, _ = user_model(
             x=x,
             target_latent=None,
-            n_timesteps=25,
-            temperature=0.667,
+            n_timesteps=item["steps"],
+            temperature=item["temperature"],
+            length_scale=item["length_scale"],
         )
         
         user_mel_raw = denormalize_mel(user_mel_pred_norm)
@@ -112,7 +153,7 @@ def generate_samples():
         duration = len(user_audio_cpu) / sample_rate
         print(f"[+] Saved {item['filename']} ({duration:.2f}s) to {save_path}")
 
-    print("\nAll README audio samples generated successfully!")
+    print("\nAll README audio samples generated successfully with BEST checkpoint!")
 
 if __name__ == "__main__":
     generate_samples()

@@ -20,11 +20,31 @@ torch.load = patched_load
 # User Mamba TTS Imports
 from TTSDataModule import TTSMODEL
 from TTSDatasetModule import denormalize_mel
-from test_inference_bigvgan import get_latest_checkpoint
 import bigvgan
 from bigvgan import BigVGAN
 from bigvgan import AttrDict
 from preprocessing.text import text_to_sequence
+
+def get_best_checkpoint(ckpt_dir="/home/monesh/TTSModel/TTS_checkpoints/"):
+    if not os.path.exists(ckpt_dir):
+        return None
+    ckpts = [
+        os.path.join(ckpt_dir, f)
+        for f in os.listdir(ckpt_dir)
+        if f.endswith(".ckpt") and not f.endswith(".tmp") and not os.path.basename(f).startswith("last")
+    ]
+    if not ckpts:
+        last_ckpt = os.path.join(ckpt_dir, "last.ckpt")
+        return last_ckpt if os.path.exists(last_ckpt) else None
+    
+    def extract_val_loss(p):
+        import re
+        match = re.search(r"val_loss=([0-9]+\.[0-9]+)", os.path.basename(p))
+        if match:
+            return float(match.group(1))
+        return float("inf")
+    
+    return min(ckpts, key=extract_val_loss)
 
 # Matcha-TTS Imports
 from matcha.models.matcha_tts import MatchaTTS
@@ -56,8 +76,8 @@ def main():
     # 1. LOAD USER MAMBA-2 TTS MODEL & BIGVGAN
     # -------------------------------------------------------------
     print("\n[1/4] Loading Mamba-2 CFM TTS Model & BigVGAN Vocoder...")
-    ckpt_path = get_latest_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
-    print(f"  TTS Checkpoint: {os.path.basename(ckpt_path)}")
+    ckpt_path = get_best_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
+    print(f"  Best TTS Checkpoint: {os.path.basename(ckpt_path)}")
     lightning_model = TTSMODEL.load_from_checkpoint(ckpt_path, map_location=device)
     lightning_model.eval()
     lightning_model.to(device)

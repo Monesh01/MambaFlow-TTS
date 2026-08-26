@@ -21,11 +21,31 @@ torch.load = patched_load
 
 from TTSDataModule import TTSMODEL
 from TTSDatasetModule import denormalize_mel
-from test_inference_bigvgan import get_latest_checkpoint
 import bigvgan
 from bigvgan import BigVGAN
 from bigvgan import AttrDict
 from preprocessing.text import text_to_sequence
+
+def get_best_checkpoint(ckpt_dir="TTS_checkpoints/"):
+    if not os.path.exists(ckpt_dir):
+        return None
+    ckpts = [
+        os.path.join(ckpt_dir, f)
+        for f in os.listdir(ckpt_dir)
+        if f.endswith(".ckpt") and not f.endswith(".tmp") and not os.path.basename(f).startswith("last")
+    ]
+    if not ckpts:
+        last_ckpt = os.path.join(ckpt_dir, "last.ckpt")
+        return last_ckpt if os.path.exists(last_ckpt) else None
+    
+    def extract_val_loss(p):
+        import re
+        match = re.search(r"val_loss=([0-9]+\.[0-9]+)", os.path.basename(p))
+        if match:
+            return float(match.group(1))
+        return float("inf")
+    
+    return min(ckpts, key=extract_val_loss)
 
 @torch.no_grad()
 def run_benchmark():
@@ -36,7 +56,7 @@ def run_benchmark():
     print(f"Running User TTS full validation benchmark on: {device}", flush=True)
 
     # 1. Load User TTS Model
-    ckpt_path = get_latest_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
+    ckpt_path = get_best_checkpoint("/home/monesh/TTSModel/TTS_checkpoints/")
     print(f"Loading User TTS checkpoint: {ckpt_path}", flush=True)
     lightning_model = TTSMODEL.load_from_checkpoint(ckpt_path, map_location=device)
     lightning_model.eval()
