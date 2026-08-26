@@ -1,0 +1,27 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Large Model Checkpoints
+TTS_checkpoints/
+TTS_checkpoints_mamba_only/
+lightning_logs/
+*.ckpt
+*.pt
+*.bin
+*.safetensors
+
+# Temporary generated test batches
+generated_mels/
+testing_samples/
+TTS_test/benchmark_outputs*
+audio_samples-ttts/
+
+# OS / Environment files
+.DS_Store
+.env
+.venv
+env/
+venv/

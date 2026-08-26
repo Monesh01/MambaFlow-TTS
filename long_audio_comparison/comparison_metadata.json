@@ -1,0 +1,23 @@
+{
+    "text": "The rapid advancement of artificial intelligence and generative modeling has fundamentally transformed modern speech synthesis. Traditional text-to-speech pipelines often relied on multi-stage architectures with autoregressive decoders, which suffered from slow sequential generation and compounding error propagation. In recent years, continuous flow matching and state-space architectures have emerged as powerful alternatives. By modeling the velocity field of a probability path between simple prior distributions and complex acoustic targets, flow matching enables high-fidelity mel-spectrogram generation in just a handful of integration steps. Furthermore, replacing quadratic self-attention mechanisms with linear state-space models allows speech synthesis systems to scale effortlessly to long-form audio without running into memory bottlenecks or computational slowdowns. As these acoustic representations pass through high-capacity neural vocoders with anti-aliased periodic activations, the resulting synthesized speech exhibits exceptional naturalness, crystal-clear articulation, and smooth, human-like prosodic rhythm throughout the entire passage.",
+    "steps": 15,
+    "temperature": 0.667,
+    "mamba_tts": {
+        "file": "/home/monesh/TTSModel/long_audio_comparison/mamba_tts_1min_15steps.wav",
+        "duration_sec": 77.73,
+        "ode_time_sec": 17.692,
+        "total_time_sec": 53.08,
+        "rtf": 0.6829,
+        "peak_vram_mb": 2512.8,
+        "sample_rate": 24000
+    },
+    "matcha_tts": {
+        "file": "/home/monesh/TTSModel/long_audio_comparison/matcha_tts_1min_15steps.wav",
+        "duration_sec": 74.29,
+        "ode_time_sec": 5.828,
+        "total_time_sec": 12.691,
+        "rtf": 0.1708,
+        "peak_vram_mb": 1777.7,
+        "sample_rate": 22050
+    }
+}
