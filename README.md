@@ -41,82 +41,52 @@ By replacing traditional 1D convolutional U-Nets (e.g., Matcha-TTS) and quadrati
 
 ## 🎧 Audio Samples & Demonstrations
 
-All audio samples below were synthesized using the **best validation checkpoint (`val_loss = 0.3275`)**, normalized to `-0.95` peak amplitude, and inverted to 24 kHz audio with the **BigVGAN** neural vocoder.
-
-> [!TIP]
-> **Cross-Browser Audio Playback:** Click any **▶️ Play Audio / Download** link below to stream or download high-fidelity 24 kHz 16-bit PCM WAV audio directly in Firefox, Chrome, Safari, Edge, or mobile browsers.
-
-### 🎵 Demonstration Matrix
-
-| Category | Text / Spoken Passage | Duration | ODE Steps | Audio Link |
-| :--- | :--- | :---: | :---: | :---: |
-| **1-Minute Continuous Speech** | *"The rapid advancement of artificial intelligence and generative modeling has fundamentally transformed modern speech synthesis..."* | **77.73 s** | 15 Steps | [▶️ Play Audio (24kHz WAV)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_1min_continuous.wav) |
-| **Conversational Daily** | *"Good morning! How are you doing today? I hope you're ready for an exciting journey ahead."* | **6.06 s** | 25 Steps | [▶️ Play Audio (24kHz WAV)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_conversational.wav) |
-| **Medium Balanced Sentence** | *"The quick brown fox jumps over the lazy dog, demonstrating clear prosody and natural flow."* | **7.74 s** | 25 Steps | [▶️ Play Audio (24kHz WAV)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_medium.wav) |
-| **Emotional Expression** | *"I simply cannot believe it! We finally made it through against all odds, and it feels absolutely incredible!"* | **8.48 s** | 25 Steps | [▶️ Play Audio (24kHz WAV)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_emotional.wav) |
-| **Technical Definition** | *"Continuous flow matching combined with bidirectional state-space models provides a modern, mathematically rigorous foundation for high-fidelity speech synthesis..."* | **19.85 s** | 25 Steps | [▶️ Play Audio (24kHz WAV)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_longest.wav) |
+All audio samples below were synthesized with **MambaFlow-TTS** using the **best validation checkpoint (`val_loss = 0.3275`)**, normalized to `-0.95` peak amplitude, and inverted to 24 kHz audio with the **BigVGAN** neural vocoder.
 
 ---
 
-### Detailed Sample Breakdown
-
-#### 1. 1-Minute Continuous Speech (77.73s — 15 Euler Steps, Temp = 0.667)
+### 1. 1-Minute Continuous Speech (77.73s — 15 Euler Steps, Temp = 0.667)
 > *"The rapid advancement of artificial intelligence and generative modeling has fundamentally transformed modern speech synthesis. Traditional text-to-speech pipelines often relied on multi-stage architectures with autoregressive decoders, which suffered from slow sequential generation and compounding error propagation. In recent years, continuous flow matching and state-space architectures have emerged as powerful alternatives. By modeling the velocity field of a probability path between simple prior distributions and complex acoustic targets, flow matching enables high-fidelity mel-spectrogram generation in just a handful of integration steps. Furthermore, replacing quadratic self-attention mechanisms with linear state-space models allows speech synthesis systems to scale effortlessly to long-form audio without running into memory bottlenecks or computational slowdowns. As these acoustic representations pass through high-capacity neural vocoders with anti-aliased periodic activations, the resulting synthesized speech exhibits exceptional naturalness, crystal-clear articulation, and smooth, human-like prosodic rhythm throughout the entire passage."*
 
-🔊 **[▶️ Play / Download sample_1min_continuous.wav (77.73s)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_1min_continuous.wav)**
-
-<audio controls src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_1min_continuous.wav">
-  <source src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_1min_continuous.wav" type="audio/wav">
-  <a href="https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_1min_continuous.wav">▶️ Direct Audio Stream (WAV)</a>
-</audio>
+| Duration | Euler Steps | Pacing (`length_scale`) | Sampling Rate | Audio Link |
+| :---: | :---: | :---: | :---: | :---: |
+| **77.73 s** | 15 Steps | `1.2` | 24,000 Hz | [🔊 **Listen / Download WAV (77.73s)**](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_1min_continuous.wav) |
 
 ---
 
-#### 2. Conversational Daily (6.06s — 25 Euler Steps)
+### 2. Conversational Daily (6.06s — 25 Euler Steps)
 > *"Good morning! How are you doing today? I hope you're ready for an exciting journey ahead."*
 
-🔊 **[▶️ Play / Download sample_conversational.wav (6.06s)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_conversational.wav)**
-
-<audio controls src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_conversational.wav">
-  <source src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_conversational.wav" type="audio/wav">
-  <a href="https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_conversational.wav">▶️ Direct Audio Stream (WAV)</a>
-</audio>
+| Duration | Euler Steps | Pacing (`length_scale`) | Sampling Rate | Audio Link |
+| :---: | :---: | :---: | :---: | :---: |
+| **6.06 s** | 25 Steps | `1.2` | 24,000 Hz | [🔊 **Listen / Download WAV (6.06s)**](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_conversational.wav) |
 
 ---
 
-#### 3. Medium Balanced Sentence (7.74s — 25 Euler Steps)
+### 3. Medium Balanced Sentence (7.74s — 25 Euler Steps)
 > *"The quick brown fox jumps over the lazy dog, demonstrating clear prosody and natural flow."*
 
-🔊 **[▶️ Play / Download sample_medium.wav (7.74s)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_medium.wav)**
-
-<audio controls src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_medium.wav">
-  <source src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_medium.wav" type="audio/wav">
-  <a href="https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_medium.wav">▶️ Direct Audio Stream (WAV)</a>
-</audio>
+| Duration | Euler Steps | Pacing (`length_scale`) | Sampling Rate | Audio Link |
+| :---: | :---: | :---: | :---: | :---: |
+| **7.74 s** | 25 Steps | `1.2` | 24,000 Hz | [🔊 **Listen / Download WAV (7.74s)**](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_medium.wav) |
 
 ---
 
-#### 4. Emotional Expression (8.48s — 25 Euler Steps)
+### 4. Emotional Expression (8.48s — 25 Euler Steps)
 > *"I simply cannot believe it! We finally made it through against all odds, and it feels absolutely incredible!"*
 
-🔊 **[▶️ Play / Download sample_emotional.wav (8.48s)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_emotional.wav)**
-
-<audio controls src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_emotional.wav">
-  <source src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_emotional.wav" type="audio/wav">
-  <a href="https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_emotional.wav">▶️ Direct Audio Stream (WAV)</a>
-</audio>
+| Duration | Euler Steps | Pacing (`length_scale`) | Sampling Rate | Audio Link |
+| :---: | :---: | :---: | :---: | :---: |
+| **8.48 s** | 25 Steps | `1.2` | 24,000 Hz | [🔊 **Listen / Download WAV (8.48s)**](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_emotional.wav) |
 
 ---
 
-#### 5. Technical Definition (19.85s — 25 Euler Steps)
+### 5. Technical Definition (19.85s — 25 Euler Steps)
 > *"Continuous flow matching combined with bidirectional state-space models provides a modern, mathematically rigorous foundation for high-fidelity speech synthesis, effortlessly maintaining acoustic consistency across extended paragraphs without quadratic attention bottlenecks."*
 
-🔊 **[▶️ Play / Download sample_longest.wav (19.85s)](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_longest.wav)**
-
-<audio controls src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_longest.wav">
-  <source src="https://raw.githubusercontent.com/Monesh01/MambaFlow-TTS/main/audio_samples/sample_longest.wav" type="audio/wav">
-  <a href="https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_longest.wav">▶️ Direct Audio Stream (WAV)</a>
-</audio>
+| Duration | Euler Steps | Pacing (`length_scale`) | Sampling Rate | Audio Link |
+| :---: | :---: | :---: | :---: | :---: |
+| **19.85 s** | 25 Steps | `1.2` | 24,000 Hz | [🔊 **Listen / Download WAV (19.85s)**](https://github.com/Monesh01/MambaFlow-TTS/raw/main/audio_samples/sample_longest.wav) |
 
 ---
 
