@@ -1,4 +1,4 @@
-# BiMamba 2 - Flow Matching TTS (with ConvNeXt Vocoder)
+# MambaFlow-TTS: Flow-Matching Speech Synthesis with Bidirectional State-Space Models
 
 **MambaFlow-TTS** is a fast, lightweight, and high-fidelity Text-to-Speech (TTS) architecture that combines **Continuous Optimal Transport Flow Matching (OT-CFM)** with **Bidirectional Mamba-2 State-Space Models (SSMs)**.
 
@@ -27,7 +27,7 @@ The system uses a mixed-architecture paradigm designed for optimal quality and s
 
 * **Text Encoder**: Transformer Encoder mapping phonemes to a continuous acoustic prior ($\mu_{\text{text}}$).
 * **Flow Matching Decoder (BiMamba 2 + ConvNeXt)**: A 6-layer Bidirectional Mamba-2 backbone interleaved with ConvNeXt-style unconditioned spatial mixing blocks processes the flow matching ODEs. It enjoys linear $\mathcal{O}(N)$ complexity, effortlessly scaling to very long audio sequences without the quadratic memory bottlenecks of standard attention mechanisms.
-* **Neural Vocoder (BigVGAN / Vocos)**: The generated 100-band Mel-Spectrogram is inverted into 24 kHz audio using modern neural vocoders (like BigVGAN with periodic snake activations or Vocos) to generate crystal-clear, artifact-free speech.
+* **Neural Vocoder (BigVGAN)**: The generated 100-band Mel-Spectrogram is inverted into 24 kHz audio using the BigVGAN neural vocoder (with periodic snake activations) to generate crystal-clear, artifact-free speech.
 
 ### Decoder Architecture Diagram
 
@@ -67,7 +67,7 @@ graph TD
 | **MambaFlow-Nano TTS (14M)** | `14.4M` | **~342 MB** | **`0.048`** (~20.8× RT) | `0.10 - 0.11` |
 | **MambaFlow TTS (27M)** | `27.3M` | **~668 MB** | **`0.110`** (~9.1× RT) | `0.16 - 0.18` |
 
-*(Note: Total End-to-End RTF depends heavily on the chosen neural vocoder size, ranging from BigVGAN 14M to BigVGAN 112M or Vocos).*
+*(Note: Total End-to-End RTF depends heavily on the chosen neural vocoder size, ranging from BigVGAN 14M to BigVGAN 112M).*
 
 ---
 
@@ -91,10 +91,10 @@ A quantitative comparison between the Nano (14M) and Base (27M) models across a 
 Synthesized text: *"A rainbow is a meteorological phenomenon that is caused by reflection, refraction and dispersion of light in water droplets resulting in a spectrum of light appearing in the sky."*
 
 * **MambaFlow-Nano TTS (14M)**
-  - [🔊 Listen to 14M Audio](./audio_samples/rainbow_vocoder_bigvgan_14M.wav)
+  - [🔊 Listen to 14M Audio (BigVGAN 14M Vocoder)](./audio_samples/rainbow_vocoder_bigvgan_14M.wav)
 
 * **MambaFlow TTS (27M)**
-  - [🔊 Listen to 27M Audio](./audio_samples/rainbow_30steps_bigvgan112M.wav)
+  - [🔊 Listen to 27M Audio (BigVGAN 14M Vocoder)](./audio_samples/rainbow_30steps.wav)
 
 ### Validation Set Comparison (Top 5 Samples)
 
