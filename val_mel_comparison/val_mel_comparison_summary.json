@@ -1,0 +1,262 @@
+[
+  {
+    "sample_idx": 0,
+    "text": "There was also a good supply of Bibles and prayers,",
+    "T_gt": 277,
+    "T_pred": 291,
+    "gt_stats": {
+      "min": -11.512925148010254,
+      "max": 0.9496912956237793,
+      "mean": -5.56671667098999,
+      "std": 2.3619918823242188
+    },
+    "metrics_encoder_raw": {
+      "mae": 0.7442415952682495,
+      "mse": 0.9427993297576904,
+      "rmse": 0.9709785423775803,
+      "cosine_sim": 0.9875649213790894,
+      "mae_low_freq": 0.8371702432632446,
+      "mae_mid_freq": 0.7165564894676208,
+      "mae_high_freq": 0.7083287239074707,
+      "min": -11.637643814086914,
+      "max": -0.41764378547668457,
+      "mean": -5.675046443939209,
+      "std": 2.195981740951538
+    },
+    "metrics_decoder_20steps_raw": {
+      "mae": 0.7733296751976013,
+      "mse": 1.1183862686157227,
+      "rmse": 1.0575378331841006,
+      "cosine_sim": 0.9836207628250122,
+      "mae_low_freq": 0.9543589353561401,
+      "mae_mid_freq": 0.7489663362503052,
+      "mae_high_freq": 0.6590170860290527,
+      "min": -11.690729141235352,
+      "max": 0.40131282806396484,
+      "mean": -5.680002212524414,
+      "std": 2.2674612998962402
+    },
+    "metrics_encoder_vs_decoder_raw": {
+      "mae": 0.5821067094802856,
+      "mse": 0.5797021389007568,
+      "rmse": 0.7613817300807505,
+      "cosine_sim": 0.9921817779541016,
+      "mae_low_freq": 0.6530890464782715,
+      "mae_mid_freq": 0.5737025737762451,
+      "mae_high_freq": 0.5355608463287354,
+      "min": -11.690729141235352,
+      "max": 0.40131282806396484,
+      "mean": -5.680002212524414,
+      "std": 2.2674612998962402
+    },
+    "png_path": "/home/monesh/TTSModel/val_mel_comparison/val_0_mel_gt_vs_enc_vs_dec20.png"
+  },
+  {
+    "sample_idx": 1,
+    "text": "Quarreling among the debtors was not unfrequent. Blows were struck, and fights often ensued.",
+    "T_gt": 636,
+    "T_pred": 562,
+    "gt_stats": {
+      "min": -11.512925148010254,
+      "max": 0.9365487694740295,
+      "mean": -5.902065753936768,
+      "std": 2.4706220626831055
+    },
+    "metrics_encoder_raw": {
+      "mae": 0.7639948725700378,
+      "mse": 1.019750952720642,
+      "rmse": 1.0098271895332598,
+      "cosine_sim": 0.9868026971817017,
+      "mae_low_freq": 0.799861490726471,
+      "mae_mid_freq": 0.7495574951171875,
+      "mae_high_freq": 0.7557622194290161,
+      "min": -11.618571281433105,
+      "max": -0.7153191566467285,
+      "mean": -6.0217366218566895,
+      "std": 2.251918315887451
+    },
+    "metrics_decoder_20steps_raw": {
+      "mae": 0.757786214351654,
+      "mse": 1.1137624979019165,
+      "rmse": 1.0553494671917527,
+      "cosine_sim": 0.9843578338623047,
+      "mae_low_freq": 0.9046032428741455,
+      "mae_mid_freq": 0.7351357340812683,
+      "mae_high_freq": 0.6694142818450928,
+      "min": -11.68718147277832,
+      "max": 1.1019558906555176,
+      "mean": -6.031991004943848,
+      "std": 2.3770110607147217
+    },
+    "metrics_encoder_vs_decoder_raw": {
+      "mae": 0.5408416986465454,
+      "mse": 0.534117579460144,
+      "rmse": 0.730833482716921,
+      "cosine_sim": 0.9930887222290039,
+      "mae_low_freq": 0.6055741310119629,
+      "mae_mid_freq": 0.536710262298584,
+      "mae_high_freq": 0.49309492111206055,
+      "min": -11.68718147277832,
+      "max": 1.1019558906555176,
+      "mean": -6.031991004943848,
+      "std": 2.3770110607147217
+    },
+    "png_path": "/home/monesh/TTSModel/val_mel_comparison/val_1_mel_gt_vs_enc_vs_dec20.png"
+  },
+  {
+    "sample_idx": 2,
+    "text": "Lee Harvey Oswald lived in a roominghouse in Dallas while his wife and children lived in Irving, at the home of Ruth Paine,",
+    "T_gt": 783,
+    "T_pred": 700,
+    "gt_stats": {
+      "min": -11.512925148010254,
+      "max": 1.0886117219924927,
+      "mean": -5.671255111694336,
+      "std": 2.4053938388824463
+    },
+    "metrics_encoder_raw": {
+      "mae": 0.7798981666564941,
+      "mse": 1.0423097610473633,
+      "rmse": 1.0209357281667457,
+      "cosine_sim": 0.9870803952217102,
+      "mae_low_freq": 0.8585197925567627,
+      "mae_mid_freq": 0.7494290471076965,
+      "mae_high_freq": 0.7600837349891663,
+      "min": -11.618280410766602,
+      "max": -0.4560210704803467,
+      "mean": -5.82108736038208,
+      "std": 2.200629949569702
+    },
+    "metrics_decoder_20steps_raw": {
+      "mae": 0.7451616525650024,
+      "mse": 1.0574949979782104,
+      "rmse": 1.0283457579910613,
+      "cosine_sim": 0.9855300784111023,
+      "mae_low_freq": 0.8984589576721191,
+      "mae_mid_freq": 0.6931461095809937,
+      "mae_high_freq": 0.6954371333122253,
+      "min": -11.550151824951172,
+      "max": 0.8061447143554688,
+      "mean": -5.77129602432251,
+      "std": 2.3166050910949707
+    },
+    "metrics_encoder_vs_decoder_raw": {
+      "mae": 0.5609237551689148,
+      "mse": 0.5607811808586121,
+      "rmse": 0.7488532438726643,
+      "cosine_sim": 0.9928033351898193,
+      "mae_low_freq": 0.6570215821266174,
+      "mae_mid_freq": 0.5385609865188599,
+      "mae_high_freq": 0.5143862962722778,
+      "min": -11.550151824951172,
+      "max": 0.8061447143554688,
+      "mean": -5.77129602432251,
+      "std": 2.3166050910949707
+    },
+    "png_path": "/home/monesh/TTSModel/val_mel_comparison/val_2_mel_gt_vs_enc_vs_dec20.png"
+  },
+  {
+    "sample_idx": 3,
+    "text": "Any thought that the President might cancel his visit to Dallas was ended",
+    "T_gt": 403,
+    "T_pred": 388,
+    "gt_stats": {
+      "min": -11.512925148010254,
+      "max": 0.8054092526435852,
+      "mean": -5.729240894317627,
+      "std": 2.242903470993042
+    },
+    "metrics_encoder_raw": {
+      "mae": 0.8017956018447876,
+      "mse": 1.1075342893600464,
+      "rmse": 1.052394550232966,
+      "cosine_sim": 0.9870110154151917,
+      "mae_low_freq": 0.8930649757385254,
+      "mae_mid_freq": 0.7471292018890381,
+      "mae_high_freq": 0.8077373504638672,
+      "min": -11.692224502563477,
+      "max": -0.661945104598999,
+      "mean": -5.831729888916016,
+      "std": 2.0254440307617188
+    },
+    "metrics_decoder_20steps_raw": {
+      "mae": 0.7147481441497803,
+      "mse": 0.9791658520698547,
+      "rmse": 0.9895280956445122,
+      "cosine_sim": 0.9869396686553955,
+      "mae_low_freq": 0.8378635048866272,
+      "mae_mid_freq": 0.66959148645401,
+      "mae_high_freq": 0.6798869967460632,
+      "min": -11.565847396850586,
+      "max": 0.5238852500915527,
+      "mean": -5.8132500648498535,
+      "std": 2.1482062339782715
+    },
+    "metrics_encoder_vs_decoder_raw": {
+      "mae": 0.5952999591827393,
+      "mse": 0.6152716875076294,
+      "rmse": 0.7843925595692691,
+      "cosine_sim": 0.9930909276008606,
+      "mae_low_freq": 0.6418848633766174,
+      "mae_mid_freq": 0.578826367855072,
+      "mae_high_freq": 0.5811895132064819,
+      "min": -11.565847396850586,
+      "max": 0.5238852500915527,
+      "mean": -5.8132500648498535,
+      "std": 2.1482062339782715
+    },
+    "png_path": "/home/monesh/TTSModel/val_mel_comparison/val_3_mel_gt_vs_enc_vs_dec20.png"
+  },
+  {
+    "sample_idx": 4,
+    "text": "But the continental police had been warned to look out for him, and two Danish inspectors got upon his track,",
+    "T_gt": 675,
+    "T_pred": 608,
+    "gt_stats": {
+      "min": -11.512925148010254,
+      "max": 1.0217063426971436,
+      "mean": -5.8135833740234375,
+      "std": 2.299190044403076
+    },
+    "metrics_encoder_raw": {
+      "mae": 0.7691674828529358,
+      "mse": 1.047359585762024,
+      "rmse": 1.0234058753798632,
+      "cosine_sim": 0.9872860312461853,
+      "mae_low_freq": 0.8745788931846619,
+      "mae_mid_freq": 0.7367873191833496,
+      "mae_high_freq": 0.7298951148986816,
+      "min": -11.632234573364258,
+      "max": -0.5632801055908203,
+      "mean": -5.776276588439941,
+      "std": 2.1339614391326904
+    },
+    "metrics_decoder_20steps_raw": {
+      "mae": 0.7671905755996704,
+      "mse": 1.1688816547393799,
+      "rmse": 1.0811483037675174,
+      "cosine_sim": 0.9850099682807922,
+      "mae_low_freq": 0.912765622138977,
+      "mae_mid_freq": 0.7382318377494812,
+      "mae_high_freq": 0.6893160939216614,
+      "min": -11.542518615722656,
+      "max": 0.6937634944915771,
+      "mean": -5.781871795654297,
+      "std": 2.250007152557373
+    },
+    "metrics_encoder_vs_decoder_raw": {
+      "mae": 0.5443551540374756,
+      "mse": 0.5243470668792725,
+      "rmse": 0.724118130472696,
+      "cosine_sim": 0.9934711456298828,
+      "mae_low_freq": 0.625858724117279,
+      "mae_mid_freq": 0.5237916707992554,
+      "mae_high_freq": 0.5072806477546692,
+      "min": -11.542518615722656,
+      "max": 0.6937634944915771,
+      "mean": -5.781871795654297,
+      "std": 2.250007152557373
+    },
+    "png_path": "/home/monesh/TTSModel/val_mel_comparison/val_4_mel_gt_vs_enc_vs_dec20.png"
+  }
+]
