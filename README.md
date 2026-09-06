@@ -51,6 +51,95 @@ To empirically prove our hypothesis regarding multiscale aliasing, we trained an
 | 4 | MambaFlow-Staircase-Mamba2 | ResNet-Style Feature Pyramid | 11.27M | 0.3627 | 1.781 | 0.3626 | Moderate |
 | 5 | MambaFlow-UNet-OneBottleneck| Classic U-Net with Bottleneck | 8.50M | 0.3689 | 1.758 | 0.3575 | High (Checkerboard artifacts)|
 
+### 📐 Architectural Topologies (Interactive)
+*Click on any architecture below to expand its detailed topology, parameter size, and Mermaid diagram.*
+
+<details>
+<summary><b>1. MambaFlow-Sequential-Tetra</b> (14.06M Parameters) 🏆</summary>
+<br>
+
+**Parameters**: Decoder: 10.33M | Backbone: 3.72M  
+**Topology**: $1\times$ Native Resolution (No downsampling/upsampling)
+
+```mermaid
+graph TD
+    A[Input: x_t + mu + t] --> B[Layer 1: BiMamba2 Block<br/>Conditioned: t + mu<br/>Residual: YES]
+    B --> C[Layer 2: BiMamba2 Block<br/>Conditioned: t only<br/>Residual: NO]
+    C --> D[Layer 3: BiMamba2 Block<br/>Conditioned: t + mu<br/>Residual: NO]
+    D --> E[Layer 4: ConvNeXt-1D AdaLN-Zero<br/>Conditioned: t<br/>Residual: YES]
+    E --> F[Full-Res Mel Velocity Target]
+```
+</details>
+
+<details>
+<summary><b>2. MambaFlow-Staircase-XTEncoder</b> (11.18M Parameters)</summary>
+<br>
+
+**Parameters**: Decoder: 7.46M | Backbone: 3.72M  
+**Topology**: Multi-scale Staircase ($1\times \to 1/2\times \to 1/4\times \to 1\times$)
+
+```mermaid
+graph TD
+    A[Native 1x] --> B[Downsample 1/2x]
+    B --> C[Downsample 1/4x Bottleneck]
+    C --> D[Upsample 1/2x ConvTranspose1d]
+    D --> E[Upsample 1x ConvTranspose1d]
+    E --> F[Output Target]
+```
+</details>
+
+<details>
+<summary><b>3. MambaFlow-Staircase-Mamba2</b> (11.27M Parameters)</summary>
+<br>
+
+**Parameters**: Decoder: 7.55M | Backbone: 3.72M  
+**Topology**: ResNet-Style Feature Pyramid
+
+```mermaid
+graph TD
+    A[Input 1x] --> B[BiMamba2 Block]
+    A --> C[Lateral Skip Connection]
+    B --> D[Downsample 1/4x Bottleneck]
+    C --> E[Pyramid Addition]
+    D --> E
+    E --> F[Upsampled 1x Output]
+```
+</details>
+
+<details>
+<summary><b>4. MambaFlow-TwoStage-Mamba2</b> (14.37M Parameters)</summary>
+<br>
+
+**Parameters**: Decoder: 10.65M | Backbone: 3.72M  
+**Topology**: Cascaded Two-Stage Downsampling
+
+```mermaid
+graph TD
+    A[Input 1x] --> B[Stage 1: 1/2x Temporal Resolution]
+    B --> C[Intermediate Feature Map]
+    C --> D[Stage 2: 1/4x Temporal Resolution]
+    D --> E[Cascaded ConvTranspose Upsampling]
+    E --> F[Final Target]
+```
+</details>
+
+<details>
+<summary><b>5. MambaFlow-UNet-OneBottleneck</b> (8.50M Parameters)</summary>
+<br>
+
+**Parameters**: Decoder: 4.78M | Backbone: 3.72M  
+**Topology**: Compact U-Net
+
+```mermaid
+graph LR
+    A[Encoder 1x] --> B[Encoder 1/2x]
+    B --> C[BiMamba2 Bottleneck 1/4x]
+    C --> D[Decoder 1/2x]
+    D --> E[Decoder 1x Output]
+```
+</details>
+<br>
+
 ### Conclusion of Findings
 The empirical results confirm that the **Tetra** architecture decisively outperforms the multiscale baselines. By bypassing `ConvTranspose1d` upsampling layers, Tetra achieves the lowest velocity error, lowest Mel reconstruction error, and best spectral convergence, formally validating that multiscale operations are highly detrimental to phase-sensitive generative acoustic flows.
 
