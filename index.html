@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MambaFlow-TTS | Audio Demonstration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-1: #3b82f6;
+            --accent-2: #8b5cf6;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #1e1b4b 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-top: 4px solid var(--accent-1);
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            max-width: 900px;
+            margin-bottom: 30px;
+        }
+
+        .audio-player {
+            width: 100%;
+            max-width: 600px;
+            margin: 10px 0;
+        }
+
+        /* Customizing the audio element */
+        audio {
+            filter: invert(90%) hue-rotate(180deg);
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .sentence-block {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent-2);
+        }
+
+        .transcript {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+            font-style: italic;
+        }
+
+        .audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .audio-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .audio-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .gt-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--text-muted);
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>MambaFlow-TTS</h1>
+        <p class="subtitle">Eliminating Multiscale Aliasing in Flow-Matching Speech Synthesis via Full-Resolution State-Space Models</p>
+    </header>
+
+    <section class="glass-panel welcome-section">
+        <h2 style="margin-top: 0;">Welcome to the Demonstration</h2>
+        <p>
+            "Hello and welcome to the MambaFlow Text-to-Speech audio demonstration site. This research focuses on eliminating severe temporal aliasing, commonly known as comb-filtering, which plagues modern diffusion and flow-matching speech systems. Through rigorous ablation studies, we prove that multiscale downsampling and transposed convolutions are the root cause of these robotic artifacts. Our proposed champion architecture, the Tetra Sequential Decoder, operates entirely at a one-x native resolution, achieving state-of-the-art spectral convergence. Please enjoy the comparative audio samples below, and pay special attention to the pristine high-frequency clarity of the Tetra model."
+        </p>
+        <div style="width: 100%; max-width: 700px; text-align: left;">
+            <div class="audio-label">
+                <strong>Champion Model: Tetra Sequential Decoder (1x Native Res)</strong>
+                <span class="badge">Zero Aliasing</span>
+            </div>
+            <audio controls class="audio-player">
+                <source src="audio_samples/welcome_tetra.wav" type="audio/wav">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </section>
+
+    <h2 style="text-align: center; margin-top: 60px;">Ablation Study: Comparative Audio Samples</h2>
+    <p style="text-align: center; color: var(--text-muted); max-width: 800px; margin: 0 auto 40px auto;">
+        Listen to the subtle differences in phase and temporal aliasing across the 5 architectural topologies. The robotic "dual voice" effect is most prominent in the TwoStage and UNet baselines due to multiscale upsampling.
+    </p>
+
+    <!-- Content will be injected by JavaScript to keep HTML clean -->
+    <div id="samples-container"></div>
+
+    <footer>
+        <p>Research by Monesh | MambaFlow-TTS</p>
+    </footer>
+</div>
+
+<script>
+    const texts = [
+        "Printing, in the only sense with which we are at present concerned, differs from most if not from all the arts and crafts represented in the Exhibition.",
+        "The forms of the letters are based upon the inscriptions of the Romans, which are the most perfect examples of the Roman character.",
+        "The early printers were not content with producing books that were merely legible.",
+        "The ink used was a rich, full-toned black, and the paper was of a high quality, made from linen rags.",
+        "In the sixteenth century, however, a decline began in the art of printing.",
+        "Welcome to the MambaFlow Text to Speech demonstration. Our models completely eliminate multiscale aliasing, ensuring crystal clear audio quality.",
+        "To achieve this, we replaced standard transposed convolutions with a bidirectional Mamba-2 state space model operating at full temporal resolution.",
+        "Listen closely to the high frequencies. You will notice that the robotic flanging artifacts common in diffusion models are no longer present.",
+        "The continuous optimal transport flow matching framework directly targets the full mel spectrogram without residual leakage.",
+        "By bypassing the quadratic memory constraints of self-attention, we achieve linear complexity, making this architecture both scalable and efficient."
+    ];
+
+    const models = [
+        { id: "tetra", name: "1. Tetra Sequential (Ours)", badge: "Best Quality" },
+        { id: "staircase_xt", name: "2. Staircase-XTEncoder" },
+        { id: "staircase_mamba2", name: "3. Staircase-Mamba2" },
+        { id: "twostage_mamba2", name: "4. TwoStage-Mamba2" },
+        { id: "unet_bottleneck", name: "5. UNet-OneBottleneck", badge: "Baseline" }
+    ];
+
+    const container = document.getElementById('samples-container');
+
+    texts.forEach((text, index) => {
+        // Create sentence block
+        const block = document.createElement('div');
+        block.className = 'sentence-block glass-panel';
+
+        // Add transcript
+        const transcript = document.createElement('div');
+        transcript.className = 'transcript';
+        transcript.innerHTML = `"${text}"`;
+        block.appendChild(transcript);
+
+        // Create grid for audios
+        const grid = document.createElement('div');
+        grid.className = 'audio-grid';
+
+        // Add Ground Truth Placeholder
+        const gtItem = document.createElement('div');
+        gtItem.className = 'audio-item';
+        gtItem.innerHTML = `
+            <div class="audio-label"><strong>Ground Truth (Vocoded)</strong></div>
+            <div class="gt-placeholder">Original audio pending...</div>
+            <!-- When ready, replace the placeholder above with:
+            <audio controls src="audio_samples/gt_sample_${(index+1).toString().padStart(2, '0')}.wav"></audio>
+            -->
+        `;
+        grid.appendChild(gtItem);
+
+        // Add Models
+        models.forEach(model => {
+            const item = document.createElement('div');
+            item.className = 'audio-item';
+            
+            let badgeHtml = model.badge ? `<span class="badge" ${model.badge === 'Baseline' ? 'style="background: #475569;"' : ''}>${model.badge}</span>` : '';
+            
+            item.innerHTML = `
+                <div class="audio-label">
+                    <strong>${model.name}</strong>
+                    ${badgeHtml}
+                </div>
+                <audio controls>
+                    <source src="audio_samples/${model.id}_sample_${(index+1).toString().padStart(2, '0')}.wav" type="audio/wav">
+                </audio>
+            `;
+            grid.appendChild(item);
+        });
+
+        block.appendChild(grid);
+        container.appendChild(block);
+    });
+</script>
+
+</body>
+</html>
