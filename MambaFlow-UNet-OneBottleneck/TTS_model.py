@@ -96,7 +96,7 @@ class MambaFlowTTSModel(nn.Module):
         target_latent=None,
         mask=None,
         audio_mask=None,
-        n_timesteps=10,
+        n_timesteps=30,
         temperature=1.0,
         length_scale=1.0,
         solver="euler",

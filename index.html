@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MambaFlow-TTS | Audio Demonstration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --accent-1: #3b82f6;
-            --accent-2: #8b5cf6;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --bg-color: #fafafa;
+            --text-main: #171717;
+            --text-muted: #525252;
+            --accent-1: #2563eb;
+            --accent-2: #7c3aed;
+            --card-bg: #ffffff;
+            --card-border: #e5e5e5;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-color) 0%, #1e1b4b 100%);
+            background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 0;
@@ -27,48 +33,53 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 60px;
-            animation: fadeIn 1s ease-out;
+            margin-bottom: 70px;
+            animation: fadeIn 0.8s ease-out;
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            background: linear-gradient(to right, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+            color: #000;
+            margin-bottom: 16px;
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: var(--text-muted);
             max-width: 800px;
             margin: 0 auto;
+            font-weight: 400;
         }
 
-        .glass-panel {
+        .author {
+            margin-top: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--accent-1);
+        }
+
+        .card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 40px;
+            margin-bottom: 50px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         
-        .glass-panel:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-hover-shadow);
         }
 
         .welcome-section {
@@ -80,103 +91,149 @@
         }
 
         .welcome-section p {
-            font-size: 1.1rem;
-            max-width: 900px;
-            margin-bottom: 30px;
+            font-size: 1.15rem;
+            max-width: 850px;
+            margin-bottom: 35px;
+            color: #404040;
         }
 
         .audio-player {
             width: 100%;
             max-width: 600px;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
-        /* Customizing the audio element */
         audio {
-            filter: invert(90%) hue-rotate(180deg);
             width: 100%;
-            height: 40px;
-            border-radius: 20px;
+            height: 44px;
+            border-radius: 8px;
             outline: none;
         }
 
-        .models-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            margin-top: 50px;
-        }
-
         .sentence-block {
-            background: rgba(15, 23, 42, 0.6);
+            background: var(--card-bg);
             border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid var(--card-border);
             border-left: 4px solid var(--accent-2);
+            box-shadow: var(--card-shadow);
         }
 
         .transcript {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #e2e8f0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            color: #262626;
             font-style: italic;
         }
 
         .audio-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
         .audio-item {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
+            background: #f9fafb;
+            padding: 20px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid #e5e7eb;
         }
 
         .audio-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: 600;
         }
 
         .badge {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-weight: bold;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .badge.baseline {
+            background: #f3f4f6;
+            color: #4b5563;
         }
 
         .gt-placeholder {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed var(--text-muted);
-            border-radius: 20px;
-            color: var(--text-muted);
+            height: 44px;
+            background: #f3f4f6;
+            border: 1px dashed #9ca3af;
+            border-radius: 8px;
+            color: #6b7280;
             font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .architectures {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 50px;
+        }
+
+        .architectures h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .arch-card {
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .arch-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--accent-1);
+        }
+
+        .arch-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         footer {
             text-align: center;
-            margin-top: 60px;
-            padding-top: 20px;
+            margin-top: 80px;
+            padding-top: 30px;
             border-top: 1px solid var(--card-border);
             color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .arch-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -186,12 +243,13 @@
     <header>
         <h1>MambaFlow-TTS</h1>
         <p class="subtitle">Eliminating Multiscale Aliasing in Flow-Matching Speech Synthesis via Full-Resolution State-Space Models</p>
+        <p class="author">Developed by Monesh</p>
     </header>
 
-    <section class="glass-panel welcome-section">
-        <h2 style="margin-top: 0;">Welcome to the Demonstration</h2>
+    <section class="card welcome-section">
+        <h2 style="margin-top: 0; color: #000; font-size: 2rem;">Welcome to the Demonstration</h2>
         <p>
-            "Hello and welcome to the MambaFlow Text-to-Speech audio demonstration site. This research focuses on eliminating severe temporal aliasing, commonly known as comb-filtering, which plagues modern diffusion and flow-matching speech systems. Through rigorous ablation studies, we prove that multiscale downsampling and transposed convolutions are the root cause of these robotic artifacts. Our proposed champion architecture, the Tetra Sequential Decoder, operates entirely at a one-x native resolution, achieving state-of-the-art spectral convergence. Please enjoy the comparative audio samples below, and pay special attention to the pristine high-frequency clarity of the Tetra model."
+            Hello and welcome to the MambaFlow Text-to-Speech audio demonstration site. This research focuses on eliminating severe temporal aliasing—commonly known as comb-filtering—which plagues modern diffusion and flow-matching speech systems. Through rigorous ablation studies, we prove that multiscale downsampling and transposed convolutions are the root cause of these robotic artifacts. Our proposed champion architecture, the Tetra Sequential Decoder, operates entirely at a 1x native resolution, achieving high spectral convergence. Please enjoy the comparative audio samples below, and pay special attention to the pristine high-frequency clarity of the Tetra model.
         </p>
         <div style="width: 100%; max-width: 700px; text-align: left;">
             <div class="audio-label">
@@ -205,8 +263,35 @@
         </div>
     </section>
 
-    <h2 style="text-align: center; margin-top: 60px;">Ablation Study: Comparative Audio Samples</h2>
-    <p style="text-align: center; color: var(--text-muted); max-width: 800px; margin: 0 auto 40px auto;">
+    <section class="architectures">
+        <h3>Architectures Evaluated</h3>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">Our benchmark rigorously tests 5 unique architectural topologies to observe the effects of multiscale processing on acoustic clarity.</p>
+        <div class="arch-grid">
+            <div class="arch-card">
+                <h4>1. Tetra Sequential (Ours) 🏆</h4>
+                <p>Operates entirely at 1x native resolution using Bidirectional Mamba-2 blocks. Eliminates multiscale aliasing completely and avoids transposed convolutions.</p>
+            </div>
+            <div class="arch-card">
+                <h4>2. Staircase-XTEncoder</h4>
+                <p>A multi-scale feature pyramid (1x &rarr; 1/2x &rarr; 1/4x) using cross-attention local smoothing. Achieves very low L1 errors but introduces minor phase artifacts.</p>
+            </div>
+            <div class="arch-card">
+                <h4>3. Staircase-Mamba2</h4>
+                <p>A ResNet-style feature pyramid using purely Bidirectional Mamba-2 and ConvNeXt blocks with lateral skip connections.</p>
+            </div>
+            <div class="arch-card">
+                <h4>4. TwoStage-Mamba2</h4>
+                <p>Cascaded dual-stage downsampling (1/2x and 1/4x) which relies heavily on multiscale transposed convolutions, producing audible "dual voice" flanging.</p>
+            </div>
+            <div class="arch-card">
+                <h4>5. UNet-OneBottleneck</h4>
+                <p>A standard UNet topology focused on high throughput and memory efficiency, serving as the fast but artifact-prone baseline.</p>
+            </div>
+        </div>
+    </section>
+
+    <h2 style="text-align: center; margin-top: 70px; font-size: 2.25rem; color: #000;">Ablation Study: Comparative Audio Samples</h2>
+    <p style="text-align: center; color: var(--text-muted); max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1rem;">
         Listen to the subtle differences in phase and temporal aliasing across the 5 architectural topologies. The robotic "dual voice" effect is most prominent in the TwoStage and UNet baselines due to multiscale upsampling.
     </p>
 
@@ -214,7 +299,7 @@
     <div id="samples-container"></div>
 
     <footer>
-        <p>Research by Monesh | MambaFlow-TTS</p>
+        <p>&copy; 2026 Monesh | MambaFlow-TTS</p>
     </footer>
 </div>
 
@@ -245,7 +330,7 @@
     texts.forEach((text, index) => {
         // Create sentence block
         const block = document.createElement('div');
-        block.className = 'sentence-block glass-panel';
+        block.className = 'sentence-block';
 
         // Add transcript
         const transcript = document.createElement('div');
@@ -274,14 +359,18 @@
             const item = document.createElement('div');
             item.className = 'audio-item';
             
-            let badgeHtml = model.badge ? `<span class="badge" ${model.badge === 'Baseline' ? 'style="background: #475569;"' : ''}>${model.badge}</span>` : '';
+            let badgeHtml = '';
+            if (model.badge) {
+                const badgeClass = model.badge === 'Baseline' ? 'badge baseline' : 'badge';
+                badgeHtml = `<span class="${badgeClass}">${model.badge}</span>`;
+            }
             
             item.innerHTML = `
                 <div class="audio-label">
                     <strong>${model.name}</strong>
                     ${badgeHtml}
                 </div>
-                <audio controls>
+                <audio controls preload="none">
                     <source src="audio_samples/${model.id}_sample_${(index+1).toString().padStart(2, '0')}.wav" type="audio/wav">
                 </audio>
             `;
