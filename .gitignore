@@ -8,16 +8,26 @@ __pycache__/
 TTS_checkpoints/
 TTS_checkpoints_mamba_only/
 lightning_logs/
-*.ckpt
 *.pt
 *.bin
 *.safetensors
+*.ckpt
 
-# Temporary generated test batches
+# Explicitly track the two 80-mel HiFi-GAN checkpoints requested for upload
+!Checkpoints/MambaFlow-BiDirectional-Mamba2-80mel.ckpt
+!Checkpoints/MambaFlow-UniDirectional-Mamba2-80mel.ckpt
+
+# Temporary generated test batches and scratch
 generated_mels/
 testing_samples/
 TTS_test/benchmark_outputs*
 audio_samples-ttts/
+
+# Unwanted internal benchmark execution scripts & scratch tools
+benchmark_hifigan_engine.py
+run_hifigan_benchmark.py
+run_master_7models_benchmark.py
+matcha/
 
 # OS / Environment files
 .DS_Store

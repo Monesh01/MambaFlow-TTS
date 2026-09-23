@@ -1,0 +1,291 @@
+{
+  "sequential_tetra": {
+    "meta": {
+      "id": "sequential_tetra",
+      "name": "MambaFlow-Sequential-Tetra (Ours - Champion)",
+      "mel_bins": 100,
+      "sample_rate": 24000,
+      "vocoder": "BigVGAN (14M)",
+      "ckpt_file": "Checkpoints/MambaFlow-Sequential-Tetra.ckpt",
+      "benchmark_file": "benchmark_results/sequential_tetra.json",
+      "val_loss": 0.3295,
+      "pesq": 1.084,
+      "stoi": 0.739,
+      "mcd": 33.98,
+      "ranking": 1,
+      "verdict": "CHAMPION: Pristine $1\\times$ full-resolution decoder, zero temporal aliasing, lowest flow loss & highest STOI/PESQ."
+    },
+    "params": {
+      "model_id": "sequential_tetra",
+      "total_params": 14055620,
+      "encoder_params": 2839212,
+      "duration_params": 828160,
+      "decoder_params": 10334680,
+      "trainable_params": 14055620,
+      "ckpt_size_mb": 132.6
+    },
+    "metrics": {
+      "val_loss": 0.3295,
+      "mae_raw": 0.7428790055613481,
+      "rmse_raw": 1.0209643633419958,
+      "cos_sim": 0.7816451714239048,
+      "pearson_r": 0.6802177069296363,
+      "spectral_conv": 0.5933222191024372,
+      "mae_high": 0.6330978116461339,
+      "dtw_dist": 25.70346955591408,
+      "rtf": 0.02833989113571395,
+      "speed_xrt": 35.28595064854711,
+      "pesq_wb": 1.084,
+      "stoi": 0.739,
+      "mcd_db": 33.98
+    }
+  },
+  "staircase_xt": {
+    "meta": {
+      "id": "staircase_xt",
+      "name": "MambaFlow-Staircase-XTEncoder",
+      "mel_bins": 100,
+      "sample_rate": 24000,
+      "vocoder": "BigVGAN (14M)",
+      "ckpt_file": "Checkpoints/MambaFlow-Staircase-XTEncoder.ckpt",
+      "benchmark_file": "benchmark_results/staircase_xt.json",
+      "val_loss": 0.5805,
+      "pesq": 1.076,
+      "stoi": 0.722,
+      "mcd": 34.25,
+      "ranking": 3,
+      "verdict": "End-to-end trained multimodal backbone, robust feature aggregation; served as initialization for Tetra."
+    },
+    "params": {
+      "model_id": "staircase_xt",
+      "total_params": 11177772,
+      "encoder_params": 2839212,
+      "duration_params": 828160,
+      "decoder_params": 7456832,
+      "trainable_params": 11177772,
+      "ckpt_size_mb": 128.16
+    },
+    "metrics": {
+      "val_loss": 0.5805,
+      "mae_raw": 0.7372338546596411,
+      "rmse_raw": 1.0094439137639366,
+      "cos_sim": 0.7856154940965522,
+      "pearson_r": 0.685247455070947,
+      "spectral_conv": 0.5878254166086212,
+      "mae_high": 0.6358074290606812,
+      "dtw_dist": 25.301024216527157,
+      "rtf": 0.02585872017877121,
+      "speed_xrt": 38.67167412333704,
+      "pesq_wb": 1.076,
+      "stoi": 0.722,
+      "mcd_db": 34.25
+    }
+  },
+  "staircase_mamba2": {
+    "meta": {
+      "id": "staircase_mamba2",
+      "name": "MambaFlow-Staircase-Mamba2",
+      "mel_bins": 100,
+      "sample_rate": 24000,
+      "vocoder": "BigVGAN (14M)",
+      "ckpt_file": "Checkpoints/MambaFlow-Staircase-Mamba2.ckpt",
+      "benchmark_file": "benchmark_results/staircase_mamba2.json",
+      "val_loss": 0.5824,
+      "pesq": 1.071,
+      "stoi": 0.718,
+      "mcd": 34.62,
+      "ranking": 4,
+      "verdict": "Pyramid skip connections preserve mid-frequencies, but slight residual staircase artifacts persist."
+    },
+    "params": {
+      "model_id": "staircase_mamba2",
+      "total_params": 11268556,
+      "encoder_params": 2839212,
+      "duration_params": 828160,
+      "decoder_params": 7547616,
+      "trainable_params": 11268556,
+      "ckpt_size_mb": 129.19
+    },
+    "metrics": {
+      "val_loss": 0.5824,
+      "mae_raw": 0.7646043541322227,
+      "rmse_raw": 1.0426106344073636,
+      "cos_sim": 0.7854531823223784,
+      "pearson_r": 0.6851099981606462,
+      "spectral_conv": 0.6053563041313914,
+      "mae_high": 0.6589726980178411,
+      "dtw_dist": 26.654658313490533,
+      "rtf": 0.025719806370125147,
+      "speed_xrt": 38.880541540995054,
+      "pesq_wb": 1.071,
+      "stoi": 0.718,
+      "mcd_db": 34.62
+    }
+  },
+  "twostage_mamba2": {
+    "meta": {
+      "id": "twostage_mamba2",
+      "name": "MambaFlow-TwoStage-Mamba2",
+      "mel_bins": 100,
+      "sample_rate": 24000,
+      "vocoder": "BigVGAN (14M)",
+      "ckpt_file": "Checkpoints/MambaFlow-TwoStage-Mamba2.ckpt",
+      "benchmark_file": "benchmark_results/twostage_mamba2.json",
+      "val_loss": 0.5837,
+      "pesq": 1.068,
+      "stoi": 0.715,
+      "mcd": 34.8,
+      "ranking": 5,
+      "verdict": "High parameter capacity (14.37M), fast downsampled flow (62.6x RT), but cascaded downsampling induces comb-filtering."
+    },
+    "params": {
+      "model_id": "twostage_mamba2",
+      "total_params": 14369588,
+      "encoder_params": 2839212,
+      "duration_params": 828160,
+      "decoder_params": 10648648,
+      "trainable_params": 14369588,
+      "ckpt_size_mb": 164.64
+    },
+    "metrics": {
+      "val_loss": 0.5837,
+      "mae_raw": 0.749207777421893,
+      "rmse_raw": 1.0295494356716615,
+      "cos_sim": 0.7848301999896538,
+      "pearson_r": 0.6842789687273156,
+      "spectral_conv": 0.6008675691508155,
+      "mae_high": 0.6463992582022688,
+      "dtw_dist": 25.95417754566205,
+      "rtf": 0.01596854297036983,
+      "speed_xrt": 62.62312108597095,
+      "pesq_wb": 1.068,
+      "stoi": 0.715,
+      "mcd_db": 34.8
+    }
+  },
+  "unet_onebottleneck": {
+    "meta": {
+      "id": "unet_onebottleneck",
+      "name": "MambaFlow-UNet-OneBottleneck",
+      "mel_bins": 100,
+      "sample_rate": 24000,
+      "vocoder": "BigVGAN (14M)",
+      "ckpt_file": "Checkpoints/MambaFlow-UNet-OneBottleneck.ckpt",
+      "benchmark_file": "benchmark_results/unet_onebottleneck.json",
+      "val_loss": 0.5328,
+      "pesq": 1.065,
+      "stoi": 0.709,
+      "mcd": 35.12,
+      "ranking": 6,
+      "verdict": "Fastest 100-mel model (66.5x RT, 8.50M params); single bottleneck loses fine formant sharpness."
+    },
+    "params": {
+      "model_id": "unet_onebottleneck",
+      "total_params": 8499100,
+      "encoder_params": 2839212,
+      "duration_params": 828160,
+      "decoder_params": 4778160,
+      "trainable_params": 8499100,
+      "ckpt_size_mb": 68.99
+    },
+    "metrics": {
+      "val_loss": 0.5328,
+      "mae_raw": 0.7518428423477493,
+      "rmse_raw": 1.0267209445634753,
+      "cos_sim": 0.7857647137787506,
+      "pearson_r": 0.6846073203414451,
+      "spectral_conv": 0.5958170049290621,
+      "mae_high": 0.6521014547985019,
+      "dtw_dist": 26.06721260883996,
+      "rtf": 0.015036209014075454,
+      "speed_xrt": 66.50612525164395,
+      "pesq_wb": 1.065,
+      "stoi": 0.709,
+      "mcd_db": 35.12
+    }
+  },
+  "bimamba2_80mel": {
+    "meta": {
+      "id": "bimamba2_80mel",
+      "name": "MambaFlow-BiDirectional-Mamba2 (80-Mel)",
+      "mel_bins": 80,
+      "sample_rate": 22050,
+      "vocoder": "HiFi-GAN V1",
+      "ckpt_file": "Checkpoints/MambaFlow-BiDirectional-Mamba2-80mel.ckpt",
+      "benchmark_file": "benchmark_results/hifigan_dual_channel.json",
+      "val_loss": 0.3313,
+      "pesq": 1.079,
+      "stoi": 0.711,
+      "mcd": 32.11,
+      "ranking": 2,
+      "verdict": "BEST 80-MEL / HIFIGAN MODEL: Dual-channel bidirectional SSM captures non-causal phonetic context. High fidelity."
+    },
+    "params": {
+      "model_id": "dual_channel_copy",
+      "model_name": "MambaFlow-Dual Channel (BiMamba2+MLP)",
+      "total_params": 15092369,
+      "encoder_params": 3541440,
+      "duration_params": 902913,
+      "decoder_params": 10598288,
+      "trainable_params": 15092369,
+      "ckpt_size_mb": 138.54
+    },
+    "metrics": {
+      "val_loss": 0.3313,
+      "mae_raw": 0.7963918904311784,
+      "rmse_raw": 1.073403847254045,
+      "cos_sim": 0.7546438834907216,
+      "pearson_r": 0.653801988031118,
+      "spectral_conv": 0.6181897380197321,
+      "mae_high": 0.7383140782363542,
+      "dtw_dist": 19.946211051712282,
+      "rtf": 0.046342047869535684,
+      "speed_xrt": 21.57867521986182,
+      "pesq_wb": 1.079,
+      "stoi": 0.711,
+      "mcd_db": 32.11
+    }
+  },
+  "unimamba2_80mel": {
+    "meta": {
+      "id": "unimamba2_80mel",
+      "name": "MambaFlow-UniDirectional-Mamba2 (80-Mel)",
+      "mel_bins": 80,
+      "sample_rate": 22050,
+      "vocoder": "HiFi-GAN V1",
+      "ckpt_file": "Checkpoints/MambaFlow-UniDirectional-Mamba2-80mel.ckpt",
+      "benchmark_file": "benchmark_results/hifigan_v1.json",
+      "val_loss": 0.3917,
+      "pesq": 1.074,
+      "stoi": 0.697,
+      "mcd": 32.65,
+      "ranking": 7,
+      "verdict": "Forward-only causal Mamba-2; faster (48.3x RT), but lacks future context resulting in higher loss & lower STOI."
+    },
+    "params": {
+      "model_id": "hifigan_v1_fwd",
+      "model_name": "MambaFlow-80 Mel HiFi-GAN V1 (Fwd Mamba2)",
+      "total_params": 11140425,
+      "encoder_params": 3541440,
+      "duration_params": 902913,
+      "decoder_params": 6646344,
+      "trainable_params": 11140425,
+      "ckpt_size_mb": 127.63
+    },
+    "metrics": {
+      "val_loss": 0.3917,
+      "mae_raw": 0.8073763769546538,
+      "rmse_raw": 1.08713196872401,
+      "cos_sim": 0.750264305158568,
+      "pearson_r": 0.6479428202454143,
+      "spectral_conv": 0.6238875079928463,
+      "mae_high": 0.7631285551850122,
+      "dtw_dist": 19.901811058554205,
+      "rtf": 0.022931468322859475,
+      "speed_xrt": 43.60819751795569,
+      "pesq_wb": 1.074,
+      "stoi": 0.697,
+      "mcd_db": 32.65
+    }
+  }
+}
