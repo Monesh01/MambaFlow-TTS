@@ -72,7 +72,7 @@ The table below presents the verified performance across our Top 5 Distinct Arch
 
 ## 4. In-Depth Comparative Analysis
 
-### A. Continuous Latent Space: MambaFlow-CA-BiMamba-448D (Flagship SOTA)
+### A. Continuous Latent Space: MambaFlow-CA-BiMamba-448D (448D Latent Model)
 Operating in Meta's 128D DACVAE continuous latent space at 48,000 Hz represents our most expressive acoustic domain:
 - **Studio-Quality Naturalness**: Achieves a NISQA MOS of **4.62**, outperforming all mel-spectrogram representations.
 - **Intelligibility**: Achieves a low Word Error Rate of **3.84%** and Phoneme Error Rate of **1.29%** on 50 unseen validation sentences.
@@ -104,7 +104,7 @@ Our experiments with four multiscale architectures (`Staircase-XTEncoder`, `Stai
 
 | Use Case | Recommended Architecture | Key Rationale |
 | :--- | :--- | :--- |
-| **Production Studio Speech (Highest Naturalness)** | `MambaFlow-CA-BiMamba-448D` | NISQA MOS 4.62, 48 kHz DACVAE fidelity, rich prosody. |
+| **High-Fidelity Studio Speech (Highest Naturalness)** | `MambaFlow-CA-BiMamba-448D` | NISQA MOS 4.62, 48 kHz DACVAE fidelity, rich prosody. |
 | **High-Fidelity Offline Synthesis (Zero Aliasing)** | `MambaFlow-Sequential-Tetra` | Native 1× resolution, zero comb-filtering, PER 0.55%. |
 | **Edge & Low-Memory Deployment** | `MambaFlow-CA-BiMamba-256D` | 18M params, 48 kHz DACVAE latent representation. |
 | **Ultra-Low Latency Streaming Speech** | `MambaFlow-UniDirectional-80mel` | 43.6× Real-Time throughput, causal forward SSM. |

@@ -1,0 +1,38 @@
+[
+  {
+    "checkpoint": "mambaflow_ca_bimamba_448d_cfg15_epoch_221_loss_0.8917.ckpt",
+    "mean_wer": 0.03223648355627761,
+    "mean_cer": 0.013431275986260857,
+    "mean_per": 0.011106184546665199,
+    "mean_straightness": 0.8752954255414263,
+    "mean_f0_rmse": 54.693820929918054,
+    "mean_secs": 0.973741580247879,
+    "mean_nisqa_mos": 4.598830590248108,
+    "mean_rtf": 0.2051521522144252,
+    "mean_speed_xrt": 6.796899690889213
+  },
+  {
+    "checkpoint": "mambaflow_ca_bimamba_448d_cfg15_epoch_279_loss_0.8891.ckpt",
+    "mean_wer": 0.04340531472510877,
+    "mean_cer": 0.016450315824834826,
+    "mean_per": 0.017116214297646214,
+    "mean_straightness": 0.8765640373988748,
+    "mean_f0_rmse": 56.021629846995395,
+    "mean_secs": 0.9733856892585755,
+    "mean_nisqa_mos": 4.6213183069229125,
+    "mean_rtf": 0.155719504400342,
+    "mean_speed_xrt": 7.0841047347258685
+  },
+  {
+    "checkpoint": "mambaflow_ca_bimamba_448d_cfg15_last.ckpt",
+    "mean_wer": 0.03550714807694213,
+    "mean_cer": 0.015446806784542601,
+    "mean_per": 0.013314879824899704,
+    "mean_straightness": 0.8767236004876833,
+    "mean_f0_rmse": 57.22796958598915,
+    "mean_secs": 0.9734610629081726,
+    "mean_nisqa_mos": 4.626218395233154,
+    "mean_rtf": 0.15413810774107153,
+    "mean_speed_xrt": 7.121082404437001
+  }
+]
