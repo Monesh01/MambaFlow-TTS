@@ -1,0 +1,6 @@
+model_id,name,domain,vocoder,sr,total_params_m,dec_params_m,val_loss,wer_pct,cer_pct,per_pct,nisqa_mos,secs,straightness,rtf,speed_xrt,role
+latent_448d,MambaFlow-CA-BiMamba-448D,128D Continuous Latent,Meta DACVAE (48 kHz),48000,42.2,31.86,0.896,3.84,1.48,1.29,4.62,0.973,0.8742,0.0577,17.33,"Flagship SOTA: 128D continuous VAE latent, Cross-Attention + BiMamba-2"
+latent_256d,MambaFlow-CA-BiMamba-256D,128D Continuous Latent,Meta DACVAE (48 kHz),48000,18.07,11.23,0.9434,7.69,2.8,2.81,3.86,0.954,0.8669,0.095,10.53,Compact Latent Tier: Lightweight 18M continuous latent model
+seq_tetra,MambaFlow-Sequential-Tetra,100-Mel Spectrogram,BigVGAN 14M (24 kHz),24000,14.06,10.33,0.3295,4.9,1.85,0.55,4.3,0.982,0.941,0.0283,35.29,"Native 1x Champion: 4-stage sequential BiMamba-2, eliminates comb-filtering"
+bi_80mel,MambaFlow-BiDirectional-80mel,80-Mel Spectrogram,HiFi-GAN V1 (22.05 kHz),22050,15.09,10.6,0.3313,4.4,1.62,0.65,4.39,0.985,0.981,0.0463,21.58,Best 80-Mel: Dual-channel non-causal SSM with full lookahead context
+uni_80mel,MambaFlow-UniDirectional-80mel,80-Mel Spectrogram,HiFi-GAN V1 (22.05 kHz),22050,11.14,6.65,0.3917,3.88,1.45,0.58,4.29,0.968,0.98,0.0229,43.61,Fastest Causal: Forward-only causal SSM for ultra-low-latency streaming

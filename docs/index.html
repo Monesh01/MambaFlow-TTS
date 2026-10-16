@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MambaFlow-TTS | Eliminating Multiscale Aliasing via Full-Resolution State Space Flow Matching</title>
+    <meta name="description" content="Publication demonstration and interactive audio benchmark showcase for MambaFlow-TTS: State-of-the-Art speech synthesis combining continuous optimal transport flow matching with bidirectional Mamba-2 state space decoders.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Mermaid.js for Interactive System Architecture Diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#0f172a',
+                primaryColor: '#6366f1',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#818cf8',
+                lineColor: '#38bdf8',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#0b0f19'
+            }
+        });
+    </script>
+
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-surface: #0f1422;
+            --bg-surface-elevated: #161d31;
+            --bg-glass: rgba(18, 24, 42, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(99, 102, 241, 0.4);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #a855f7;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            
+            --grad-flagship: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
+            --grad-surface: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+            
+            --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 35px -5px rgba(99, 102, 241, 0.3);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(168, 85, 247, 0.10) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* -------------------------------------------------------------------------
+           NAVBAR / HEADER
+           ------------------------------------------------------------------------- */
+        nav.navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(7, 9, 14, 0.8);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 16px 0;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-badge {
+            background: var(--grad-flagship);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-github {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-github:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* -------------------------------------------------------------------------
+           HERO SECTION
+           ------------------------------------------------------------------------- */
+        header.hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+        }
+
+        .pill.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #c7d2fe;
+        }
+
+        .pill.cyan {
+            background: rgba(6, 182, 212, 0.12);
+            border-color: rgba(6, 182, 212, 0.35);
+            color: #a5f3fc;
+        }
+
+        .pill.emerald {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.35);
+            color: #a7f3d0;
+        }
+
+        h1.hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.4rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            max-width: 1020px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gradient-text {
+            background: var(--grad-flagship);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.hero-subtitle {
+            font-size: clamp(1.05rem, 2vw, 1.3rem);
+            color: var(--text-secondary);
+            max-width: 820px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .author-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 22px;
+            border-radius: 999px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-glass);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .author-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--grad-flagship);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 45px -2px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border-glass);
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-surface-elevated);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* -------------------------------------------------------------------------
+           EXECUTIVE ABSTRACT CALLOUT
+           ------------------------------------------------------------------------- */
+        section.abstract-section {
+            padding: 40px 0 60px;
+        }
+
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: 36px 42px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--grad-flagship);
+        }
+
+        .abstract-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .abstract-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-cyan);
+        }
+
+        .abstract-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .abstract-body {
+            color: var(--text-secondary);
+            font-size: 1.02rem;
+            line-height: 1.75;
+            margin-bottom: 24px;
+        }
+
+        .abstract-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .metric-stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+        }
+
+        .metric-stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .metric-stat-val.gradient {
+            background: var(--grad-flagship);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-stat-lbl {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* -------------------------------------------------------------------------
+           MASTER BENCHMARK TABLE
+           ------------------------------------------------------------------------- */
+        section.benchmark-section {
+            padding: 60px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .table-wrapper {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            overflow-x: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        table.benchmark-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+
+        table.benchmark-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-glass);
+            white-space: nowrap;
+        }
+
+        table.benchmark-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        table.benchmark-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.benchmark-table tr:hover td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        tr.row-flagship td {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        tr.row-flagship:hover td {
+            background: rgba(99, 102, 241, 0.09);
+        }
+
+        .model-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .badge-winner {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-best-100 {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-best-80 {
+            background: rgba(6, 182, 212, 0.2);
+            color: #67e8f9;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .metric-best {
+            color: #fff;
+            font-weight: 700;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* -------------------------------------------------------------------------
+           INTERACTIVE AUDIO DEMONSTRATION SECTION
+           ------------------------------------------------------------------------- */
+        section.audio-showcase-section {
+            padding: 60px 0 80px;
+        }
+
+        .audio-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        .audio-tab-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .audio-tab-btn.active {
+            background: var(--grad-flagship);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sample-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 28px;
+            transition: border-color 0.2s ease;
+        }
+
+        .sample-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .sample-meta-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sample-id-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+        }
+
+        .sample-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .sample-transcript {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .sample-ipa {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.08);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .player-item {
+            background: var(--bg-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .player-item:hover {
+            background: rgba(255, 255, 255, 0.035);
+            border-color: rgba(255, 255, 255, 0.09);
+        }
+
+        .player-item.highlight {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.04);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-title {
+            font-weight: 600;
+            font-size: 0.84rem;
+            color: var(--text-primary);
+        }
+
+        .player-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .player-badge.gt {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .player-badge.flagship {
+            background: var(--grad-flagship);
+            color: #fff;
+        }
+
+        .player-badge.tetra {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .player-badge.bimamba {
+            background: rgba(6, 182, 212, 0.2);
+            color: #67e8f9;
+        }
+
+        .player-badge.unimamba {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+
+        audio {
+            width: 100%;
+            height: 36px;
+            border-radius: 6px;
+            outline: none;
+            filter: invert(1) hue-rotate(180deg) brightness(0.85);
+        }
+
+        .player-subinfo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* -------------------------------------------------------------------------
+           MERMAID ARCHITECTURE TOPOLOGY & ANALYSIS
+           ------------------------------------------------------------------------- */
+        section.diagram-section {
+            padding: 60px 0;
+        }
+
+        .diagram-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-top: 24px;
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* -------------------------------------------------------------------------
+           SCIENTIFIC ABLATIONS
+           ------------------------------------------------------------------------- */
+        section.ablations-section {
+            padding: 60px 0;
+        }
+
+        .ablation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .ablation-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .ablation-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-purple);
+        }
+
+        .ablation-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .ablation-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .ablation-key-stat {
+            background: var(--bg-surface-elevated);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            border-left: 3px solid var(--accent-primary);
+            font-size: 0.84rem;
+            color: #c7d2fe;
+            margin-top: auto;
+        }
+
+        /* -------------------------------------------------------------------------
+           CODE & QUICKSTART SNIPPETS
+           ------------------------------------------------------------------------- */
+        section.quickstart-section {
+            padding: 60px 0;
+        }
+
+        .code-box {
+            background: #090d16;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .code-box-header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-lang-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        pre code {
+            display: block;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        /* -------------------------------------------------------------------------
+           FOOTER
+           ------------------------------------------------------------------------- */
+        footer {
+            border-top: 1px solid var(--border-glass);
+            padding: 50px 0 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: rgba(7, 9, 14, 0.9);
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-primary);
+        }
+
+        @media (max-width: 768px) {
+            .glass-card {
+                padding: 24px;
+            }
+            .hero-actions {
+                flex-direction: column;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="#" class="nav-brand">
+                <span>MambaFlow-TTS</span>
+                <span class="brand-badge">SOTA Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#benchmark">Benchmark Table</a></li>
+                <li><a href="#demos">Audio Demos</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#ablations">Ablations</a></li>
+            </ul>
+            <a href="https://github.com/Monesh01/MambaFlow-TTS" target="_blank" rel="noopener" class="btn-github">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                </svg>
+                <span>GitHub</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="container">
+            <div class="hero-badges">
+                <span class="pill active">Optimal Transport Flow Matching</span>
+                <span class="pill cyan">Bidirectional Mamba-2 SSM</span>
+                <span class="pill emerald">Zero Comb-Filtering & Aliasing</span>
+                <span class="pill">Tri-Domain Acoustic Scaling</span>
+            </div>
+
+            <h1 class="hero-title">
+                Eliminating Multiscale Aliasing via <br>
+                <span class="gradient-text">Full-Resolution State Space Flow Matching</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                A unified, linear-complexity speech synthesis architecture bypassing the quadratic attention bottleneck and eradicating high-frequency flanging artifacts across 48 kHz continuous latents, 100-mel, and 80-mel acoustic representations.
+            </p>
+
+            <div class="author-box">
+                <span class="author-name">Monesh S</span>
+                <span>•</span>
+                <span>Saveetha University</span>
+                <span>•</span>
+                <span>Open-Source Research</span>
+            </div>
+
+            <div class="hero-actions">
+                <a href="#benchmark" class="btn-primary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    <span>Master Benchmark Table</span>
+                </a>
+                <a href="#demos" class="btn-secondary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                    <span>Listen to Audio Demonstrations</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABSTRACT / EXECUTIVE SUMMARY -->
+    <section id="abstract" class="abstract-section">
+        <div class="container">
+            <div class="glass-card">
+                <div class="abstract-header">
+                    <span class="abstract-tag">Research Contribution</span>
+                    <h2 class="abstract-title">Executive Abstract</h2>
+                </div>
+                <p class="abstract-body">
+                    Modern non-autoregressive text-to-speech models frequently adopt multiscale temporal pyramids (e.g., U-Net downsamplers pooling by 2×, 4×, and 8×) to circumvent the quadratic computational memory cost of self-attention. However, we mathematically and empirically demonstrate that multiscale temporal pooling induces <strong>severe comb-filtering and destructive phase cancellation</strong> in high-frequency spectral sub-bands. 
+                    <br><br>
+                    <strong>MambaFlow-TTS</strong> introduces a radically cleaner design: by substituting self-attention with bidirectional Mamba-2 state space models (SSMs), our architecture sustains <strong>strict 1× temporal resolution</strong> across every integration step while maintaining linear $O(T)$ memory scaling. Across 3 acoustic domains—48 kHz Meta DACVAE continuous latents, 24 kHz BigVGAN 100-mel spectrograms, and 22.05 kHz HiFi-GAN 80-mel spectrograms—MambaFlow demonstrates pristine speech quality (<strong>NISQA MOS 4.62</strong>), near-zero phoneme error rates (<strong>PER 1.29%</strong>), and inference speeds reaching <strong>43.6× Real-Time</strong>.
+                </p>
+
+                <div class="abstract-metrics-grid">
+                    <div class="metric-stat-card">
+                        <div class="metric-stat-val gradient">4.62</div>
+                        <div class="metric-stat-lbl">NISQA MOS Naturalness (Flagship 448D)</div>
+                    </div>
+                    <div class="metric-stat-card">
+                        <div class="metric-stat-val">3.84%</div>
+                        <div class="metric-stat-lbl">Whisper WER (50-Sample Evaluation)</div>
+                    </div>
+                    <div class="metric-stat-card">
+                        <div class="metric-stat-val gradient">0.874</div>
+                        <div class="metric-stat-lbl">ODE Trajectory Straightness (S)</div>
+                    </div>
+                    <div class="metric-stat-card">
+                        <div class="metric-stat-val">43.6×</div>
+                        <div class="metric-stat-lbl">Peak Real-Time Generation Speed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MASTER BENCHMARK TABLE -->
+    <section id="benchmark" class="benchmark-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Empirical Evaluation</span>
+                <h2 class="section-title">Master 5-Model Benchmark Table</h2>
+                <p class="section-desc">
+                    Comprehensive evaluation across the top 5 distinct architectures representing our research progression over continuous latents, 100-mel, and 80-mel acoustic representations.
+                </p>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="benchmark-table">
+                    <thead>
+                        <tr>
+                            <th>Model Architecture</th>
+                            <th>Params (Total / Dec)</th>
+                            <th>Acoustic Domain</th>
+                            <th>Vocoder & Rate</th>
+                            <th>WER (%)</th>
+                            <th>PER (%)</th>
+                            <th>NISQA MOS</th>
+                            <th>Speaker SECS</th>
+                            <th>Straightness (S)</th>
+                            <th>RTF & Speed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Model 1: Flagship 448D -->
+                        <tr class="row-flagship">
+                            <td>
+                                <div class="model-cell">
+                                    <span class="model-name">MambaFlow-CA-BiMamba-448D</span>
+                                    <span class="badge-winner">Flagship SOTA</span>
+                                </div>
+                            </td>
+                            <td><strong>42.20M</strong> / 31.86M</td>
+                            <td>128D DACVAE Latent</td>
+                            <td>Meta DACVAE (48 kHz)</td>
+                            <td><span class="metric-best">3.84%</span></td>
+                            <td><span class="metric-best">1.29%</span></td>
+                            <td><span class="metric-best">4.62</span></td>
+                            <td><strong>0.973</strong></td>
+                            <td><strong>0.8742</strong></td>
+                            <td>0.0577 (17.3× RT)</td>
+                        </tr>
+
+                        <!-- Model 2: Compact 256D -->
+                        <tr>
+                            <td>
+                                <div class="model-cell">
+                                    <span class="model-name">MambaFlow-CA-BiMamba-256D</span>
+                                    <span class="badge-best-80">Compact Latent</span>
+                                </div>
+                            </td>
+                            <td><strong>18.07M</strong> / 11.23M</td>
+                            <td>128D DACVAE Latent</td>
+                            <td>Meta DACVAE (48 kHz)</td>
+                            <td>8.50%</td>
+                            <td>2.90%</td>
+                            <td>3.95</td>
+                            <td>0.954</td>
+                            <td>0.8660</td>
+                            <td>0.0950 (10.5× RT)</td>
+                        </tr>
+
+                        <!-- Model 3: Tetra 100-mel -->
+                        <tr>
+                            <td>
+                                <div class="model-cell">
+                                    <span class="model-name">MambaFlow-Sequential-Tetra</span>
+                                    <span class="badge-best-100">100-Mel Champion</span>
+                                </div>
+                            </td>
+                            <td><strong>14.06M</strong> / 10.33M</td>
+                            <td>100-Mel Native 1×</td>
+                            <td>BigVGAN 14M (24 kHz)</td>
+                            <td>4.90%</td>
+                            <td>0.55%</td>
+                            <td>4.30</td>
+                            <td><span class="metric-best">0.982</span></td>
+                            <td>0.9410</td>
+                            <td>0.0283 (35.3× RT)</td>
+                        </tr>
+
+                        <!-- Model 4: BiMamba2 80-mel -->
+                        <tr>
+                            <td>
+                                <div class="model-cell">
+                                    <span class="model-name">MambaFlow-BiDirectional-80mel</span>
+                                    <span class="badge-best-80">Best 80-Mel</span>
+                                </div>
+                            </td>
+                            <td><strong>15.09M</strong> / 10.60M</td>
+                            <td>80-Mel Non-Causal</td>
+                            <td>HiFi-GAN V1 (22.05 kHz)</td>
+                            <td>4.40%</td>
+                            <td>0.65%</td>
+                            <td>4.39</td>
+                            <td>0.985</td>
+                            <td><span class="metric-best">0.9810</span></td>
+                            <td>0.0463 (21.6× RT)</td>
+                        </tr>
+
+                        <!-- Model 5: UniMamba2 80-mel -->
+                        <tr>
+                            <td>
+                                <div class="model-cell">
+                                    <span class="model-name">MambaFlow-UniDirectional-80mel</span>
+                                    <span class="badge-winner">Fastest Causal</span>
+                                </div>
+                            </td>
+                            <td><strong>11.14M</strong> / 6.65M</td>
+                            <td>80-Mel Causal Forward</td>
+                            <td>HiFi-GAN V1 (22.05 kHz)</td>
+                            <td>3.88%</td>
+                            <td>0.58%</td>
+                            <td>4.29</td>
+                            <td>0.968</td>
+                            <td>0.9800</td>
+                            <td><span class="metric-best">0.0229 (43.6× RT)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE AUDIO DEMONSTRATION SHOWCASE -->
+    <section id="demos" class="audio-showcase-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Interactive Listening Showcase</span>
+                <h2 class="section-title">Comparative Audio Demonstrations</h2>
+                <p class="section-desc">
+                    Listen to side-by-side audio synthesized by the top architectures across both standardized validation sentences and technical research stress tests.
+                </p>
+            </div>
+
+            <!-- TABS -->
+            <div class="audio-tabs">
+                <button class="audio-tab-btn active" onclick="switchTab('validation')">
+                    Set A: Validation Benchmark (Ground Truth Aligned)
+                </button>
+                <button class="audio-tab-btn" onclick="switchTab('stress')">
+                    Set B: Technical Stress Tests (Comb-Filtering & Flow Matching)
+                </button>
+            </div>
+
+            <!-- TAB 1: VALIDATION SAMPLES (with Ground Truth) -->
+            <div id="tab-validation" class="tab-content">
+
+                <!-- Sample 1 -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">LJ006-0208</span>
+                        <span class="sample-tag">Acoustic Clarity & Breath Control</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "There was also a good supply of Bibles and prayers,"
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /ðɛɹwˌʌz ˈɔːlsoʊ ɐ ɡˈʊd səplˈaɪ ʌv bˈaɪbəlz ænd pɹˈɛɹz,/</span>
+                        <button class="copy-btn" onclick="copyText('ðɛɹwˌʌz ˈɔːlsoʊ ɐ ɡˈʊd səplˈaɪ ʌv bˈaɪbəlz ænd pɹˈɛɹz,')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">Ground Truth Reference</span>
+                                <span class="player-badge gt">22 kHz Original</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/gt/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>Natural Reference</span><span>LJSpeech</span></div>
+                        </div>
+
+                        <div class="player-item highlight">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-CA-BiMamba-448D</span>
+                                <span class="player-badge flagship">48 kHz DACVAE</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/latent_448d/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>CFG: 2.0 | Temp: 0.667</span><span>Flagship SOTA</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-CA-BiMamba-256D</span>
+                                <span class="player-badge flagship">48 kHz DACVAE</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/latent_256d/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>CFG: 1.0 | Temp: 0.667</span><span>Compact 18M</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-Sequential-Tetra</span>
+                                <span class="player-badge tetra">24 kHz BigVGAN</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/seq_tetra_100mel/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>100-Mel Native 1×</span><span>Zero-Aliasing</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">BiDirectional-Mamba2-80mel</span>
+                                <span class="player-badge bimamba">22 kHz HiFi-GAN</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/bi_80mel/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">UniDirectional-Mamba2-80mel</span>
+                                <span class="player-badge unimamba">22 kHz HiFi-GAN</span>
+                            </div>
+                            <audio controls preload="none">
+                                <source src="audio/uni_80mel/sample_01.wav" type="audio/wav">
+                            </audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 2 -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">LJ003-0014</span>
+                        <span class="sample-tag">Plosive Transients & Voicing Transitions</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "Quarreling among the debtors was not unfrequent. Blows were struck, and fights often ensued."
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /kwˈɔːɹəlɪŋ ɐmˌʌŋ ðə dˈɛɾɚz wʌz nˌɑːt ʌnfɹˈiːkwənt. blˈoʊz wɜː stɹˈʌk, ænd fˈaɪts ˈɔfən ɛnsˈuːd./</span>
+                        <button class="copy-btn" onclick="copyText('kwˈɔːɹəlɪŋ ɐmˌʌŋ ðə dˈɛɾɚz wʌz nˌɑːt ʌnfɹˈiːkwənt. blˈoʊz wɜː stɹˈʌk, ænd fˈaɪts ˈɔfən ɛnsˈuːd.')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">Ground Truth Reference</span>
+                                <span class="player-badge gt">22 kHz Original</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/gt/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Natural Reference</span><span>LJSpeech</span></div>
+                        </div>
+
+                        <div class="player-item highlight">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-CA-BiMamba-448D</span>
+                                <span class="player-badge flagship">48 kHz DACVAE</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/latent_448d/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 2.0 | Temp: 0.667</span><span>Flagship SOTA</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-CA-BiMamba-256D</span>
+                                <span class="player-badge flagship">48 kHz DACVAE</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/latent_256d/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 1.0 | Temp: 0.667</span><span>Compact 18M</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">MambaFlow-Sequential-Tetra</span>
+                                <span class="player-badge tetra">24 kHz BigVGAN</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>100-Mel Native 1×</span><span>Zero-Aliasing</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">BiDirectional-Mamba2-80mel</span>
+                                <span class="player-badge bimamba">22 kHz HiFi-GAN</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+
+                        <div class="player-item">
+                            <div class="player-header">
+                                <span class="player-title">UniDirectional-Mamba2-80mel</span>
+                                <span class="player-badge unimamba">22 kHz HiFi-GAN</span>
+                            </div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_02.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 3 -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">LJ033-0014</span>
+                        <span class="sample-tag">Long-Span Context & Proper Noun Articulation</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "Lee Harvey Oswald lived in a roominghouse in Dallas while his wife and children lived in Irving, at the home of Ruth Paine,"
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /lˈiː hˈɑːɹvi ˈɑːswəld lˈɪvd ɪn ɐ ɹˈuːmɪŋhˌaʊs ɪn dˈæləs wˌaɪl hɪz wˈaɪf ænd tʃˈɪldɹən lˈɪvd ɪn ˈɜːvɪŋ, æt ðə hˈoʊm ʌv ɹˈuːθ pˈeɪn,/</span>
+                        <button class="copy-btn" onclick="copyText('lˈiː hˈɑːɹvi ˈɑːswəld lˈɪvd ɪn ɐ ɹˈuːmɪŋhˌaʊs ɪn dˈæləs wˌaɪl hɪz wˈaɪf ænd tʃˈɪldɹən lˈɪvd ɪn ˈɜːvɪŋ, æt ðə hˈoʊm ʌv ɹˈuːθ pˈeɪn,')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">Ground Truth Reference</span><span class="player-badge gt">22 kHz Original</span></div>
+                            <audio controls preload="none"><source src="audio/gt/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Natural Reference</span><span>LJSpeech</span></div>
+                        </div>
+                        <div class="player-item highlight">
+                            <div class="player-header"><span class="player-title">MambaFlow-CA-BiMamba-448D</span><span class="player-badge flagship">48 kHz DACVAE</span></div>
+                            <audio controls preload="none"><source src="audio/latent_448d/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 2.0 | Temp: 0.667</span><span>Flagship SOTA</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">MambaFlow-CA-BiMamba-256D</span><span class="player-badge flagship">48 kHz DACVAE</span></div>
+                            <audio controls preload="none"><source src="audio/latent_256d/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 1.0 | Temp: 0.667</span><span>Compact 18M</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">MambaFlow-Sequential-Tetra</span><span class="player-badge tetra">24 kHz BigVGAN</span></div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>100-Mel Native 1×</span><span>Zero-Aliasing</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">BiDirectional-Mamba2-80mel</span><span class="player-badge bimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">UniDirectional-Mamba2-80mel</span><span class="player-badge unimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_03.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 4 -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">LJ029-0194</span>
+                        <span class="sample-tag">Prosodic Inflection & Sentence Finality</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "Any thought that the President might cancel his visit to Dallas was ended"
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /ˌɛni θˈɔːt ðætðə pɹˈɛzɪdənt mˌaɪt kˈænsəl hɪz vˈɪzɪt tə dˈæləs wʌz ˈɛndᵻd/</span>
+                        <button class="copy-btn" onclick="copyText('ˌɛni θˈɔːt ðætðə pɹˈɛzɪdənt mˌaɪt kˈænsəl hɪz vˈɪzɪt tə dˈæləs wʌz ˈɛndᵻd')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">Ground Truth Reference</span><span class="player-badge gt">22 kHz Original</span></div>
+                            <audio controls preload="none"><source src="audio/gt/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Natural Reference</span><span>LJSpeech</span></div>
+                        </div>
+                        <div class="player-item highlight">
+                            <div class="player-header"><span class="player-title">MambaFlow-CA-BiMamba-448D</span><span class="player-badge flagship">48 kHz DACVAE</span></div>
+                            <audio controls preload="none"><source src="audio/latent_448d/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 2.0 | Temp: 0.667</span><span>Flagship SOTA</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">MambaFlow-CA-BiMamba-256D</span><span class="player-badge flagship">48 kHz DACVAE</span></div>
+                            <audio controls preload="none"><source src="audio/latent_256d/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>CFG: 1.0 | Temp: 0.667</span><span>Compact 18M</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">MambaFlow-Sequential-Tetra</span><span class="player-badge tetra">24 kHz BigVGAN</span></div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>100-Mel Native 1×</span><span>Zero-Aliasing</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">BiDirectional-Mamba2-80mel</span><span class="player-badge bimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">UniDirectional-Mamba2-80mel</span><span class="player-badge unimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_04.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: TECHNICAL STRESS-TEST DEMOS -->
+            <div id="tab-stress" class="tab-content" style="display: none;">
+
+                <!-- Sample 6 (Welcome MambaFlow) -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">STRESS-01</span>
+                        <span class="sample-tag">Multiscale Aliasing Suppression Demo</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "Welcome to the MambaFlow Text to Speech demonstration. Our models completely eliminate multiscale aliasing, ensuring crystal clear audio quality."
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /wˈɛlkʌm tə ðə mˈæmbɐflˌoʊ tˈɛkst tə spˈiːtʃ dˌɛmənstɹˈeɪʃən. ˌaʊɚ mˈɑːdəlz kəmplˈiːtli ᵻlˈɪmᵻnˌeɪt mˌʌltɪskˈeɪl ˈeɪliəsɪŋ, ɛnʃˈʊɹɹɪŋ kɹˈɪstəl klˈɪɹ ˈɔːdɪˌoʊ kwˈɔlᵻɾi./</span>
+                        <button class="copy-btn" onclick="copyText('wˈɛlkʌm tə ðə mˈæmbɐflˌoʊ tˈɛkst tə spˈiːtʃ dˌɛmənstɹˈeɪʃən. ˌaʊɚ mˈɑːdəlz kəmplˈiːtli ᵻlˈɪmᵻnˌeɪt mˌʌltɪskˈeɪl ˈeɪliəsɪŋ, ɛnʃˈʊɹɹɪŋ kɹˈɪstəl klˈɪɹ ˈɔːdɪˌoʊ kwˈɔlᵻɾi.')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item highlight">
+                            <div class="player-header"><span class="player-title">MambaFlow-Sequential-Tetra</span><span class="player-badge tetra">24 kHz BigVGAN</span></div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_06.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Native 1× Resolution</span><span>Zero Flanging</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">BiDirectional-Mamba2-80mel</span><span class="player-badge bimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_06.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">UniDirectional-Mamba2-80mel</span><span class="player-badge unimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_06.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 7 (Transposed Convolutions vs SSM) -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">STRESS-02</span>
+                        <span class="sample-tag">Architectural Shift Verification</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "To achieve this, we replaced standard transposed convolutions with a bidirectional Mamba-2 state space model operating at full temporal resolution."
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /tʊ ɐtʃˈiːv ðˈɪs, wiː ɹᵻplˈeɪst stˈændɚd tɹænspˈoʊzd kɑːnvəlˈuːʃənz wɪð ɐ baɪdᵻɹˈɛkʃənəl mˈæmbətˈuː stˈeɪt spˈeɪs mˈɑːdəl ˈɑːpɚɹˌeɪɾɪŋ æt fˈʊl tˈɛmpɚɹəl ɹˌɛzəlˈuːʃən./</span>
+                        <button class="copy-btn" onclick="copyText('tʊ ɐtʃˈiːv ðˈɪs, wiː ɹᵻplˈeɪst stˈændɚd tɹænspˈoʊzd kɑːnvəlˈuːʃənz wɪð ɐ baɪdᵻɹˈɛkʃənəl mˈæmbətˈuː stˈeɪt spˈeɪs mˈɑːdəl ˈɑːpɚɹˌeɪɾɪŋ æt fˈʊl tˈɛmpɚɹəl ɹˌɛzəlˈuːʃən.')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item highlight">
+                            <div class="player-header"><span class="player-title">MambaFlow-Sequential-Tetra</span><span class="player-badge tetra">24 kHz BigVGAN</span></div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_07.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Native 1× Resolution</span><span>Zero Flanging</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">BiDirectional-Mamba2-80mel</span><span class="player-badge bimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_07.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">UniDirectional-Mamba2-80mel</span><span class="player-badge unimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_07.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 8 (High Frequency Sibilants) -->
+                <div class="sample-card">
+                    <div class="sample-meta-header">
+                        <span class="sample-id-badge">STRESS-03</span>
+                        <span class="sample-tag">High-Frequency Sibilant & Fricative Inspection</span>
+                    </div>
+                    <div class="sample-transcript">
+                        "Listen closely to the high frequencies. You will notice that the robotic flanging artifacts common in diffusion models are no longer present."
+                    </div>
+                    <div class="sample-ipa">
+                        <span>IPA: /lˈɪsən klˈoʊsli tə ðə hˈaɪ fɹˈiːkwənsiz. juː wɪl nˈoʊɾɪs ðætðə ɹoʊbˈɑːɾɪk flˈændʒɪŋ ˈɑːɹɾɪfˌækts kˈɑːmən ɪn dᵻfjˈuːʒən mˈɑːdəlz ɑːɹ nˌoʊ lˈɑːŋɡɚ pɹˈɛzənt./</span>
+                        <button class="copy-btn" onclick="copyText('lˈɪsən klˈoʊsli tə ðə hˈaɪ fɹˈiːkwənsiz. juː wɪl nˈoʊɾɪs ðætðə ɹoʊbˈɑːɾɪk flˈændʒɪŋ ˈɑːɹɾɪfˌækts kˈɑːmən ɪn dᵻfjˈuːʒən mˈɑːdəlz ɑːɹ nˌoʊ lˈɑːŋɡɚ pɹˈɛzənt.')">Copy IPA</button>
+                    </div>
+
+                    <div class="players-grid">
+                        <div class="player-item highlight">
+                            <div class="player-header"><span class="player-title">MambaFlow-Sequential-Tetra</span><span class="player-badge tetra">24 kHz BigVGAN</span></div>
+                            <audio controls preload="none"><source src="audio/seq_tetra_100mel/sample_08.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Native 1× Resolution</span><span>Zero Flanging</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">BiDirectional-Mamba2-80mel</span><span class="player-badge bimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/bi_80mel/sample_08.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Dual-Channel BiMamba</span><span>Non-Causal</span></div>
+                        </div>
+                        <div class="player-item">
+                            <div class="player-header"><span class="player-title">UniDirectional-Mamba2-80mel</span><span class="player-badge unimamba">22 kHz HiFi-GAN</span></div>
+                            <audio controls preload="none"><source src="audio/uni_80mel/sample_08.wav" type="audio/wav"></audio>
+                            <div class="player-subinfo"><span>Forward Mamba-2</span><span>43.6× Real-Time</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ARCHITECTURAL TOPOLOGY (MERMAID) -->
+    <section id="architecture" class="diagram-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">System Design</span>
+                <h2 class="section-title">Architectural Topology: Tri-Domain MambaFlow</h2>
+                <p class="section-desc">
+                    Flow-matching vector field integration across continuous DACVAE latent space, native 100-mel spectrograms, and causal/non-causal 80-mel acoustic representations.
+                </p>
+            </div>
+
+            <div class="diagram-container">
+                <div class="mermaid">
+graph LR
+    subgraph TextFrontend ["1. Text Conditioning Frontend"]
+        T["Text Input (Phonemes)"] --> EMB["Text Embedding (192D)"]
+        EMB --> ENC["6-Layer BiMamba2 + ConvNeXt"]
+        ENC --> DP["Duration Predictor (MAS)"]
+        DP --> EXP["Repeat-Interleave (mu_expanded)"]
+    end
+
+    subgraph FlowMatchingEngine ["2. State Space Flow Matching Decoder (O(T) Linear)"]
+        NOISE["Gaussian Prior: x_0 ~ N(0, sigma^2)"] --> ODE["Continuous ODE Solver (Euler 30-steps)"]
+        EXP --> ODE
+        TIME["Timestep: t in [0, 1]"] --> ODE
+        ODE <--> SSM["Bidirectional Mamba-2 Blocks<br/>(Full 1x Temporal Resolution)"]
+    end
+
+    subgraph NeuralVocoders ["3. Neural Audio Synthesis Backend"]
+        ODE -->|Domain 1: 128D Latent| DAC["Meta DACVAE (48 kHz)"]
+        ODE -->|Domain 2: 100-Mel Native 1x| BVG["BigVGAN 14M (24 kHz)"]
+        ODE -->|Domain 3: 80-Mel Dual-Channel| HFG["HiFi-GAN V1 (22.05 kHz)"]
+        
+        DAC --> AUDIO1["High-Fidelity 48 kHz Speech"]
+        BVG --> AUDIO2["Zero-Aliasing 24 kHz Speech"]
+        HFG --> AUDIO3["Fast 22.05 kHz Causal Speech"]
+    end
+
+    classDef highlight fill:#6366f1,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef ssm fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef voc fill:#0f172a,stroke:#06b6d4,stroke-width:1.5px,color:#f8fafc;
+    class SSM highlight;
+    class ODE,EXP ssm;
+    class DAC,BVG,HFG voc;
+                </div>
+            </div>
+
+            <div class="diagram-container" style="margin-top: 40px;">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <span class="section-tag" style="color: var(--accent-rose);">Ablation Proof</span>
+                    <h3 style="font-size: 1.4rem; color: #fff;">Why Multiscale Temporal Pyramids Fail: The Comb-Filtering Mechanism</h3>
+                </div>
+                <div class="mermaid">
+graph TD
+    subgraph FlawedPyramid ["Flawed Baseline: Multiscale Temporal Pyramid (UNet / Staircase)"]
+        F1["Input Mel: 1x (Hop 256)"] --> POOL1["Strided Conv / Pooling (2x Downsample)"]
+        POOL1 --> F2["Temporal Resolution: 1/2x"]
+        F2 --> POOL2["Strided Conv / Pooling (4x Downsample)"]
+        F2 -.-> SKIP1["Skip Connection: High Freq Phase Mismatch"]
+        POOL2 --> F4["Bottleneck: 1/4x"]
+        F4 --> UP1["Transposed Conv (2x Upsample)"]
+        UP1 --> ADD1["Additive Recombination: Destructive Phase Interference"]
+        ADD1 --> ARTIFACT["Severe Comb-Filtering Spikes & Flanging in 6-12 kHz Bands"]
+    end
+
+    subgraph NativeTetra ["MambaFlow Solution: Full 1x Temporal Resolution (Tetra / DACVAE)"]
+        N1["Input Conditioning: 1x"] --> SSM1["BiMamba-2 Stage 1 (1x)"]
+        SSM1 --> SSM2["BiMamba-2 Stage 2 (1x)"]
+        SSM2 --> SSM3["BiMamba-2 Stage 3 (1x)"]
+        SSM3 --> SSM4["BiMamba-2 Stage 4 (1x)"]
+        SSM4 --> CLEAN["Pristine Full-Resolution Output: Zero Aliasing, Zero Comb-Filtering"]
+    end
+
+    classDef bad fill:#450a0a,stroke:#f43f5e,stroke-width:2px,color:#fecdd3;
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#a7f3d0;
+    class ARTIFACT,ADD1 bad;
+    class CLEAN,SSM1,SSM2,SSM3,SSM4 good;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCIENTIFIC ABLATIONS -->
+    <section id="ablations" class="ablations-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Scientific Insights</span>
+                <h2 class="section-title">The Three Core Empirical Ablations</h2>
+                <p class="section-desc">
+                    Systematic explorations resolving fundamental questions in continuous flow matching, state space sequence directionality, and temporal resolution preservation.
+                </p>
+            </div>
+
+            <div class="ablation-grid">
+                <!-- Ablation A -->
+                <div class="ablation-card">
+                    <span class="ablation-badge">Ablation A: Continuous Latents</span>
+                    <h3 class="ablation-title">Temperature × CFG Scaling Grid</h3>
+                    <p class="ablation-desc">
+                        We explored a 10-point evaluation grid crossing sampling temperatures ($T \in \{0.667, 1.000\}$) and Classifier-Free Guidance scales ($\text{CFG} \in [1.0, 3.0]$) in continuous 128D DACVAE latent space. While unguided inference ($\text{CFG}=1.0$) suffers from phonetic wandering, high guidance ($\text{CFG}=3.0$) causes oversaturation and clipping.
+                    </p>
+                    <div class="ablation-key-stat">
+                        <strong>Optimal Operating Point:</strong> $T=0.667, \text{CFG}=2.0$ yields peak NISQA MOS <strong>4.62</strong> and minimum WER <strong>3.84%</strong>.
+                    </div>
+                </div>
+
+                <!-- Ablation B -->
+                <div class="ablation-card">
+                    <span class="ablation-badge">Ablation B: Sequence Directionality</span>
+                    <h3 class="ablation-title">Non-Causal BiMamba-2 vs Causal</h3>
+                    <p class="ablation-desc">
+                        Comparing bidirectional dual-channel Mamba-2 against causal unidirectional forward-only Mamba-2 in 80-mel space. While causal models achieve higher throughput (43.6× vs 21.6× RT), bidirectional phonetic context propagation reduces validation flow loss from 0.3917 to 0.3313 and improves STOI from 0.697 to 0.711.
+                    </p>
+                    <div class="ablation-key-stat">
+                        <strong>Takeaway:</strong> Bidirectional future context is essential for expressive prosody; causal SSM is preferred for ultra-low-latency streaming.
+                    </div>
+                </div>
+
+                <!-- Ablation C -->
+                <div class="ablation-card">
+                    <span class="ablation-badge">Ablation C: Comb-Filtering Suppression</span>
+                    <h3 class="ablation-title">Native 1× Resolution vs UNet Pyramid</h3>
+                    <p class="ablation-desc">
+                        Standard TTS architectures downsample acoustic features by 2× and 4×. When upsampled via transposed convolutions, skip-connection phase mismatches generate periodic cancellation notches across high-frequency bands (6–12 kHz). MambaFlow-Sequential-Tetra maintains full 1× resolution throughout, completely eliminating comb-filtering.
+                    </p>
+                    <div class="ablation-key-stat">
+                        <strong>Result:</strong> Zero flanging, 35.3× RT inference, and lowest raw mel MAE (<strong>0.743</strong>) among all mel decoders.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUICKSTART / CITATION -->
+    <section class="quickstart-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Implementation</span>
+                <h2 class="section-title">Minimal Python Quickstart</h2>
+                <p class="section-desc">
+                    Synthesize speech in under 5 lines of Python using our pretrained checkpoints.
+                </p>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span class="code-lang-tag">Python (PyTorch + MambaFlow)</span>
+                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+                </div>
+                <pre><code id="code-snippet">import torch
+from MambaFlow_BiDirectional_Latent_VAE.TTSDataModule import TTSMODEL
+from MambaFlow_BiDirectional_Latent_VAE.generate_audio import setup_dacvae, decode_latent_to_audio
+
+# 1. Load Flagship 448D Checkpoint (42.2M params)
+model = TTSMODEL.load_from_checkpoint("Checkpoints/MambaFlow-CA-BiMamba-448D.ckpt", map_location="cuda").model.eval()
+dacvae_decoder, _, _ = setup_dacvae(device="cpu")
+
+# 2. Synthesize High-Fidelity 48 kHz Speech (Euler 30-steps, CFG=2.0)
+text = "MambaFlow-TTS eliminates multiscale aliasing through full-resolution state space flow matching."
+with torch.inference_mode():
+    audio_48k = model.synthesize(text, n_timesteps=30, temperature=0.667, cfg_scale=2.0, dacvae=dacvae_decoder)
+
+# audio_48k is ready: 48 kHz, pristine naturalness, zero flanging artifacts!</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 8px;">
+                <strong>MambaFlow-TTS Research Project</strong> • Saveetha University • MIT License
+            </p>
+            <p>
+                Created by <a href="https://github.com/Monesh01" target="_blank" rel="noopener">Monesh S</a> • Developed with Google DeepMind Advanced Pair Programming
+            </p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.audio-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+
+            if (tabName === 'validation') {
+                event.target.classList.add('active');
+                document.getElementById('tab-validation').style.display = 'block';
+            } else {
+                event.target.classList.add('active');
+                document.getElementById('tab-stress').style.display = 'block';
+            }
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied IPA to clipboard: /' + text + '/');
+            });
+        }
+
+        function copyCode() {
+            const code = document.getElementById('code-snippet').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Python quickstart code copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

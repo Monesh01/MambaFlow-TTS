@@ -1,0 +1,24 @@
+{
+  "latent_256d": {
+    "model_id": "latent_256d",
+    "model_name": "MambaFlow-CA-BiMamba-256D (Compact 128D DACVAE)",
+    "total_samples": 50,
+    "mean_wer": 0.36194161535608077,
+    "std_wer": 1.8555343742253236,
+    "mean_cer": 0.2519738302868464,
+    "std_cer": 1.3754146203735553,
+    "mean_per": 0.2525706679913156,
+    "std_per": 1.40297736021018,
+    "mean_straightness": 0.8669159683563542,
+    "std_straightness": 0.004885048333884075,
+    "mean_f0_rmse": 66.12190267904818,
+    "mean_energy_rmse": 0.05251501649618149,
+    "mean_rolloff_85": 4323.330013337413,
+    "mean_nisqa_mos": 3.8640546083450316,
+    "mean_nisqa_coloration": 3.600862593650818,
+    "mean_nisqa_discontinuity": 4.048275933265686,
+    "mean_secs": 0.9536019265651703,
+    "mean_rtf": 0.14173080333638222,
+    "mean_speed_xrt": 10.235827842943365
+  }
+}

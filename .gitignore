@@ -13,7 +13,10 @@ lightning_logs/
 *.safetensors
 *.ckpt
 
-# Explicitly track the two 80-mel HiFi-GAN checkpoints requested for upload
+# Explicitly track the Top 5 production checkpoints (via Git LFS)
+!Checkpoints/MambaFlow-CA-BiMamba-448D.ckpt
+!Checkpoints/MambaFlow-CA-BiMamba-256D.ckpt
+!Checkpoints/MambaFlow-Sequential-Tetra.ckpt
 !Checkpoints/MambaFlow-BiDirectional-Mamba2-80mel.ckpt
 !Checkpoints/MambaFlow-UniDirectional-Mamba2-80mel.ckpt
 
@@ -22,6 +25,18 @@ generated_mels/
 testing_samples/
 TTS_test/benchmark_outputs*
 audio_samples-ttts/
+test_unified_eval/
+eval_unified_results/*/wavs/
+eval_grid_results/
+eval_results/
+eval_results_cfg15/
+eval_synthetic_results/
+generated_audio/
+generated_audio_hifigan/
+TTS_logs/
+*backup*/
+archive/checkpoints/
+scratch_loss_data.json
 
 # Unwanted internal benchmark execution scripts & scratch tools
 benchmark_hifigan_engine.py
@@ -35,3 +50,4 @@ matcha/
 .venv
 env/
 venv/
+
