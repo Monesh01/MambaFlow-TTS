@@ -2,7 +2,7 @@
 
 [![Live Audio Demonstration](https://img.shields.io/badge/GitHub%20Pages-Live%20Showcase-indigo?style=for-the-badge&logo=github)](https://monesh01.github.io/MambaFlow-TTS/)
 [![Report](https://img.shields.io/badge/Technical%20Report-BENCHMARK__REPORT.md-blue?style=for-the-badge&logo=markdown)](BENCHMARK_REPORT.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=for-the-badge)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python)](https://python.org)
 [![PyTorch 2.4](https://img.shields.io/badge/PyTorch-2.4-EE4C2C?style=for-the-badge&logo=pytorch)](https://pytorch.org)
 [![CUDA 12.4](https://img.shields.io/badge/CUDA-12.4-76B900?style=for-the-badge&logo=nvidia)](https://developer.nvidia.com/cuda-toolkit)
